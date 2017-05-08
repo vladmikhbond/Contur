@@ -39,8 +39,8 @@ namespace Sample
                 pBox.Refresh();
                 if (selected != null)
                 {
-                   // var ps = points.GetScaledPoligone(selected, M);
-                    g.DrawLines(new Pen(Color.Red, M), conturs[selected]);
+                    var ps = conturs[selected].Select(pt => new Point(pt.X * M, pt.Y * M)).ToArray();
+                    g.DrawLines(new Pen(Color.Red, M), ps);
                 }
                 current = selected;
             }
