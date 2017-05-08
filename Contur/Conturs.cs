@@ -6,36 +6,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sample
+namespace Contur
 {
-    public class ConturHelper
+    /// <summary>
+    /// Exports: this[key], Load, Save, GetPoligonePointInto
+    /// </summary>
+    public class Conturs
     {
-        Dictionary<string, Point[]> Conturs;
+        const string FILE_NAME = "conturs.txt";
 
-        public ConturHelper(string fileName)
+        Dictionary<string, Point[]> dict;
+
+        public Conturs()
         {
-            Conturs = LoadConturs(fileName);
+            dict = Load();
         }
 
         public Point[] this[string key]
         {
-            get { return Conturs[key];  }
+            get { return dict[key]; }
+            set { dict[key] = value; }
         }
 
-        public static  Dictionary<string, Point[]> LoadConturs(string pointsFileName)
+        public IEnumerable<string> Keys
         {
-            try
-            {
-                return File.ReadAllLines(pointsFileName)
-                    .Select(line => line.Split(':'))
-                    .Where(ss => ss.Length == 2)
-                    .Select(ss => new { key = ss[0].Trim(), val = TextToPointArray(ss[1]) })
-                    .ToDictionary(v => v.key, v => v.val);
-            }
-            catch
-            {
+            get { return dict.Keys; }
+        }
+
+        public void Delete(string key)
+        {
+            dict.Remove(key);
+        }
+
+        public static Dictionary<string, Point[]> Load()
+        {
+            if (!File.Exists(FILE_NAME))
                 return new Dictionary<string, Point[]>();
+
+            return File.ReadAllLines(FILE_NAME)
+                .Select(line => line.Split(':'))
+                .Where(ss => ss.Length == 2)
+                .Select(ss => new { key = ss[0].Trim(), val = TextToPointArray(ss[1]) })
+                .ToDictionary(v => v.key, v => v.val);
+        }
+
+        public void Save()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var pair in dict)
+            {
+                string coords = new string(pair.Value.SelectMany(p => p.X + "," + p.Y + ",").ToArray());
+                sb.Append($"{pair.Key} : {coords} \r\n ");
             }
+            File.WriteAllText(FILE_NAME, sb.ToString());
         }
 
         // text is a string like "22,22,33,33,44,44,"
@@ -55,7 +78,7 @@ namespace Sample
 
         public string GetPoligonePointInto(Point p)
         {
-            foreach (var pair in Conturs)
+            foreach (var pair in dict)
             {
                 if (IsInside(pair.Value, p))
                     return pair.Key;
@@ -63,7 +86,7 @@ namespace Sample
             return null;
         }
 
-        public static bool IsInside(Point[] ps, Point p)
+        static bool IsInside(Point[] ps, Point p)
         {
             bool result = false;
             int j = ps.Count() - 1;

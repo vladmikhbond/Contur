@@ -41,22 +41,23 @@
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pBox.Image = ((System.Drawing.Image)(resources.GetObject("pBox.Image")));
             this.pBox.InitialImage = null;
-            this.pBox.Location = new System.Drawing.Point(11, 11);
-            this.pBox.Margin = new System.Windows.Forms.Padding(2);
+            this.pBox.Location = new System.Drawing.Point(15, 14);
+            this.pBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pBox.Name = "pBox";
-            this.pBox.Size = new System.Drawing.Size(905, 545);
+            this.pBox.Size = new System.Drawing.Size(1206, 670);
             this.pBox.TabIndex = 1;
             this.pBox.TabStop = false;
             this.pBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseMove);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(926, 566);
+            this.ClientSize = new System.Drawing.Size(1235, 697);
             this.Controls.Add(this.pBox);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Sample";
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).EndInit();
             this.ResumeLayout(false);
 

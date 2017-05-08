@@ -13,23 +13,15 @@ namespace Contur
 {
     public partial class MainForm : Form
     {
+        Conturs conturs;
 
         public MainForm()
         {
             InitializeComponent();
+            conturs = new Conturs();
         }
 
-        private void MakeEmptyImage()
-        {
-            var bmp = new Bitmap(pBox.Width, pBox.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
-            }
-            pBox.Image = bmp;
-        }
-
-        List<Point> points;  // last created contur's points
+        Point[] points;  // last created contur's points
 
         private void Conturing(Point startPoint)
         {
@@ -38,73 +30,85 @@ namespace Contur
             Graphics g = pBox.CreateGraphics();
             g.DrawPolygon(Pens.Red, points.ToArray());
 
-            infoLabel.Text = $"Points = {points.Count}";
+            infoLabel.Text = $"Points = {points.Length}";
         }
-
-
-        #region Drawing 
-
-        bool isDrowing = false;
-        Point p0;
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-                Conturing(e.Location);
-            }
-            else
-            {
-                isDrowing = true;
-                p0 = e.Location;
-            }
+            Conturing(e.Location);
         }
-
-        private void pBox_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (isDrowing)
-            {
-                Pen pen = new Pen(Color.Gray, 1);
-                Graphics g = pBox.CreateGraphics();
-                Graphics g2 = Graphics.FromImage(pBox.Image);
-                g.DrawLine(pen, p0, e.Location);
-                g2.DrawLine(pen, p0, e.Location);
-
-                p0 = e.Location;
-            }
-        }
-
-        private void pBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            isDrowing = false;
-        }
-
-        #endregion
 
         private void loadButton_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 pBox.Image = Image.FromFile(openFileDialog1.FileName);
+                conturs = new Conturs();
             }
         }
 
-        private void emtyButton_Click(object sender, EventArgs e)
-        {
-            MakeEmptyImage();
-        }
-
-        private void clearButton_Click(object sender, EventArgs e)
-        {
-            pBox.Refresh();
-        }
-
-        // save contur as a line like "key : 12,23,...,34,45,"
         private void saveButton_Click(object sender, EventArgs e)
         {
-            string coords = new string(points.SelectMany(p => p.X + "," + p.Y + ",").ToArray());
-            string text = $"{keyBox.Text} : {coords} \r\n ";
-            File.AppendAllText("conturs.txt", text);
+            conturs[keyBox.Text.Trim()] = points;
+            conturs.Save();
+            pBox.Refresh(); 
         }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && currentConturKey != null)
+            {
+                conturs.Delete(currentConturKey);
+                conturs.Save();
+                pBox.Refresh();
+            }
+        }
+
+ 
+        private void pBox_Paint(object sender, PaintEventArgs e)
+        {
+            foreach (var k in conturs.Keys)
+            {
+                e.Graphics.FillPolygon(Brushes.LightGray, conturs[k]);
+            }
+        }
+
+        private void pBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            HiLightRegion(new Point(e.X, e.Y));
+        }
+
+        private string currentConturKey = null;
+
+        void HiLightRegion(Point p)
+        {
+            string selectedConturKey = conturs.GetPoligonePointInto(p);
+            if (selectedConturKey != currentConturKey)
+            {
+                Graphics g = pBox.CreateGraphics();
+                pBox.Refresh();
+                if (selectedConturKey != null)
+                {
+                    g.DrawLines(new Pen(Color.Yellow, 2), conturs[selectedConturKey]);
+                    infoLabel.Text = selectedConturKey;
+                }
+                currentConturKey = selectedConturKey;
+            }
+
+        }
+
+
+        //private void MakeEmptyImage()
+        //{
+        //    var bmp = new Bitmap(pBox.Width, pBox.Height);
+        //    using (Graphics g = Graphics.FromImage(bmp))
+        //    {
+        //        g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+        //    }
+        //    pBox.Image = bmp;
+        //    conturs = new Conturs();
+        //}
+
+
     }
 }

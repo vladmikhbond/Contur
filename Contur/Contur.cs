@@ -15,7 +15,7 @@ namespace Contur
 
 
         int[,] dots;
-        public List<Point> points;
+        List<Point> points;
 
 
         public Contur(Bitmap img, int step, Point startPoint)
@@ -26,17 +26,17 @@ namespace Contur
         }
 
 
-        public static List<Point> Conturing(Bitmap image, int step, Point startPoint)
+        public static Point[] Conturing(Bitmap image, int step, Point startPoint)
         {
             var contur = new Contur(image, step, startPoint);
             contur.PointsOnBorder();
             var ps = contur.MakeRegion();
-            return ps;
+            return ps.ToArray();
         }
 
 
         /// input: step;    output: points, dots
-        public List<Point> PointsOnBorder()
+        List<Point> PointsOnBorder()
         {
             dots = new int[img.Width / step + 1, img.Height / step + 1];
             points = new List<Point>();
@@ -52,7 +52,7 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         
-        public List<Point> MakeRegion()
+        List<Point> MakeRegion()
         {
             List<Point> input = new List<Point>(points);
             List<Point> output = new List<Point>();
@@ -63,7 +63,7 @@ namespace Contur
 
             while (input.Count > 0)
             {
-                var dists = input.Select(p => dist(p, last));
+                var dists = input.Select(p => Dist(p, last));
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
                 // слишком близкие точки пропускаем
@@ -78,7 +78,7 @@ namespace Contur
 
         }
 
-        private static double dist(Point p1, Point p2)
+        private static double Dist(Point p1, Point p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;
