@@ -97,6 +97,18 @@ namespace Contur
 
         }
 
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            int step = Convert.ToInt32(stepBox.Text);
+            var conturs = Contur.GetAllConturs((Bitmap)pBox.Image, step);
+
+            //Graphics g = pBox.CreateGraphics();
+            //g.DrawPolygon(Pens.Red, points.ToArray());
+
+            infoLabel.Text = $"Conturs = {conturs.Count()}";
+
+        }
+
 
         //private void MakeEmptyImage()
         //{

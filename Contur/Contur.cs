@@ -16,7 +16,7 @@ namespace Contur
         int _step;
 
 
-        int[,] dots;         // разведочная сетка
+        int[,] dots;         // разведочная сетка : 0 - empty, 1-visited
         List<Point> points;  // точки для рекурсивной процедуры
 
 
@@ -24,7 +24,34 @@ namespace Contur
         {
             _img = img;
             _step = step;
+            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
         }
+
+        public static List<Point[]> GetAllConturs(Bitmap image, int step)
+        {
+            List<Point[]> conturs = new List<Point[]>();
+            var contur = new Contur(image, step);
+            foreach (var t in contur.GetEmptyDots())
+            {
+                var startPoint = new Point(t.Item1 * step, t.Item2 * step);
+                var ps = contur.SetPointsOnBorder(startPoint);
+                if (ps.Count > 3)
+                {
+                    ps = contur.MakeContur(ps, thinOut: false);
+                    conturs.Add(ps.ToArray());
+                }
+            }
+            return conturs;
+        }
+
+        private IEnumerable<Tuple<int, int>> GetEmptyDots()
+        {
+            for (int xo = 1; xo < dots.GetLength(0) - 1; xo++)
+                for (int yo = 1; yo < dots.GetLength(1) - 1; yo++)
+                    if (dots[xo, yo] == 0)
+                        yield return Tuple.Create(xo, yo);
+        }
+
 
         /// <summary>
         /// Создает один контур вокруг заданной точки
@@ -49,7 +76,6 @@ namespace Contur
         /// <returns></returns>
         List<Point> SetPointsOnBorder(Point startPoint)
         {
-            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
             points = new List<Point>();
             int ox = startPoint.X / _step;
             int oy = startPoint.Y / _step;

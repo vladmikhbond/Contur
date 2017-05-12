@@ -36,11 +36,12 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.stepBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.infoLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.keyBox = new System.Windows.Forms.ToolStripTextBox();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
+            this.infoLabel = new System.Windows.Forms.ToolStripLabel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -73,7 +74,8 @@
             this.toolStripLabel2,
             this.keyBox,
             this.saveButton,
-            this.infoLabel});
+            this.infoLabel,
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(908, 45);
@@ -114,17 +116,6 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 45);
             // 
-            // infoLabel
-            // 
-            this.infoLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.infoLabel.AutoSize = false;
-            this.infoLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
-            this.infoLabel.Margin = new System.Windows.Forms.Padding(1, 1, 0, 20);
-            this.infoLabel.Name = "infoLabel";
-            this.infoLabel.Size = new System.Drawing.Size(120, 24);
-            this.infoLabel.Text = "...";
-            this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // toolStripLabel2
             // 
             this.toolStripLabel2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
@@ -147,6 +138,27 @@
             this.saveButton.Size = new System.Drawing.Size(95, 42);
             this.saveButton.Text = "Save Region";
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // infoLabel
+            // 
+            this.infoLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.infoLabel.AutoSize = false;
+            this.infoLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            this.infoLabel.Margin = new System.Windows.Forms.Padding(1, 1, 0, 20);
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.Size = new System.Drawing.Size(120, 24);
+            this.infoLabel.Text = "...";
+            this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(24, 42);
+            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // MainForm
             // 
@@ -182,6 +194,7 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel2;
         private System.Windows.Forms.ToolStripTextBox keyBox;
         private System.Windows.Forms.ToolStripButton saveButton;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 
