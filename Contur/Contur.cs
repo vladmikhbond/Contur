@@ -7,54 +7,65 @@ using System.Threading.Tasks;
 
 namespace Contur
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Contur
     {
-        Bitmap img;
-        Point startPoint;
-        int step;
+        Bitmap _img;
+        int _step;
 
 
-        int[,] dots;
-        List<Point> points;
+        int[,] dots;         // разведочная сетка
+        List<Point> points;  // точки для рекурсивной процедуры
 
 
-        public Contur(Bitmap img, int step, Point startPoint)
+        private Contur(Bitmap img, int step)
         {
-            this.img = img;
-            this.step = step;
-            this.startPoint = startPoint;
+            _img = img;
+            _step = step;
         }
 
-
+        /// <summary>
+        /// Создает один контур вокруг заданной точки
+        /// </summary>
+        /// <param name="image">битмэп</param>
+        /// <param name="step">размер ячейки разведочной сетки</param>
+        /// <param name="startPoint">точка, вокруг которой...</param>
+        /// <returns></returns>
         public static Point[] Conturing(Bitmap image, int step, Point startPoint)
         {
-            var contur = new Contur(image, step, startPoint);
-            contur.PointsOnBorder();
-            var ps = contur.MakeRegion();
+            var contur = new Contur(image, step);
+            var ps = contur.SetPointsOnBorder(startPoint);
+            ps = contur.MakeContur(ps, thinOut: true);
             return ps.ToArray();
         }
 
-
-        /// input: step;    output: points, dots
-        List<Point> PointsOnBorder()
+        /// внешние имена: вход: step;    выход: points, dots
+        /// <summary>
+        /// Ставит точки на линии, окружающей заданную точку
+        /// </summary>
+        /// <param name="startPoint">заданная точка</param>
+        /// <returns></returns>
+        List<Point> SetPointsOnBorder(Point startPoint)
         {
-            dots = new int[img.Width / step + 1, img.Height / step + 1];
+            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
             points = new List<Point>();
-            int ox = startPoint.X / step;
-            int oy = startPoint.Y / step;
+            int ox = startPoint.X / _step;
+            int oy = startPoint.Y / _step;
             FloodFill(ox, oy);
             return points;
         }
 
+        /// создает контур из неупорядоченного множества точек
         /// input: points     output: 
         /// 
         /// берем первую точку из входного массива и переносим в выходной
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
-        
-        List<Point> MakeRegion()
+        /// 
+        List<Point> MakeContur(List<Point> input, bool thinOut=false)
         {
-            List<Point> input = new List<Point>(points);
             List<Point> output = new List<Point>();
 
             var last = input[0];
@@ -67,7 +78,7 @@ namespace Contur
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
                 // слишком близкие точки пропускаем
-                if (minDist > step * step / 4)
+                if (thinOut && minDist > _step * _step / 4)
                 {
                     last = input[minIdx];
                     output.Add(last);
@@ -84,14 +95,15 @@ namespace Contur
             return dx * dx + dy * dy;
         }
 
-
+        // Test if the point is on a board
+        //
         private bool IsOnBoard(int x, int y)
         {
-            Color c = img.GetPixel(x, y);
+            Color c = _img.GetPixel(x, y);
             return c.R < 255 && c.G < 255 && c.B < 255;
         }
 
-        /// Создание коллекци  контурных точек
+        /// Создание коллекци точек, расположенных на линии, окружающей точку (ox, oy)
         /// 
         /// красим точку в 1
         /// проверяем левого соседа. 
@@ -104,17 +116,17 @@ namespace Contur
             dots[ox, oy] = 1;
             if (ox > 0 && dots[ox - 1, oy] == 0)
                 SneakLeft(ox, oy);
-            if (step * (ox + 1) < img.Width && dots[ox + 1, oy] == 0)
+            if (_step * (ox + 1) < _img.Width && dots[ox + 1, oy] == 0)
                 SneakRight(ox, oy);
             if (oy > 0 && dots[ox, oy - 1] == 0)
                 SneakUp(ox, oy);
-            if (step * (oy + 1) < img.Height && dots[ox, oy + 1] == 0)
+            if (_step * (oy + 1) < _img.Height && dots[ox, oy + 1] == 0)
                 SneakDown(ox, oy);
         }
 
         private void SneakLeft(int ox, int oy)
         {
-            int x0 = step * ox, y0 = step * oy, x1 = x0 - step;
+            int x0 = _step * ox, y0 = _step * oy, x1 = x0 - _step;
             for (int x = x0; x > x1; x--)
             {
                 if (IsOnBoard(x, y0))
@@ -128,7 +140,7 @@ namespace Contur
 
         private void SneakRight(int ox, int oy)
         {
-            int x0 = step * ox, y0 = step * oy, x1 = x0 + step;
+            int x0 = _step * ox, y0 = _step * oy, x1 = x0 + _step;
             for (int x = x0; x < x1; x++)
             {
                 if (IsOnBoard(x, y0))
@@ -142,7 +154,7 @@ namespace Contur
 
         private void SneakUp(int ox, int oy)
         {
-            int x0 = step * ox, y0 = step * oy, y1 = y0 - step;
+            int x0 = _step * ox, y0 = _step * oy, y1 = y0 - _step;
             for (int y = y0; y > y1; y--)
             {
                 if (IsOnBoard(x0, y))
@@ -156,7 +168,7 @@ namespace Contur
 
         private void SneakDown(int ox, int oy)
         {
-            int x0 = step * ox, y0 = step * oy, y1 = y0 + step;
+            int x0 = _step * ox, y0 = _step * oy, y1 = y0 + _step;
             for (int y = y0; y < y1; y++)
             {
                 if (IsOnBoard(x0, y))
