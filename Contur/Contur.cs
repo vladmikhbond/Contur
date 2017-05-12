@@ -10,7 +10,7 @@ namespace Contur
     /// <summary>
     /// 
     /// </summary>
-    class Contur
+    public class Contur
     {
         Bitmap _img;
         int _step;
@@ -37,8 +37,8 @@ namespace Contur
                 var ps = contur.SetPointsOnBorder(startPoint);
                 if (ps.Count > 3)
                 {
-                    ps = contur.MakeContur(ps, thinOut: false);
-                    conturs.Add(ps.ToArray());
+                    var ps2 = contur.MakeContur(ps, thinOut: false);
+                    conturs.Add(ps2.ToArray());
                 }
             }
             return conturs;
@@ -90,8 +90,9 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<Point> MakeContur(List<Point> input, bool thinOut=false)
+        List<Point> MakeContur(List<Point> points, bool thinOut=false)
         {
+            List<Point> input = new List<Point>(points);
             List<Point> output = new List<Point>();
 
             var last = input[0];
@@ -104,7 +105,7 @@ namespace Contur
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
                 // слишком близкие точки пропускаем
-                if (thinOut && minDist > _step * _step / 4)
+                if (!thinOut || minDist > _step * _step / 4)
                 {
                     last = input[minIdx];
                     output.Add(last);

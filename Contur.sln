@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contur", "Contur\Contur.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{3C73D392-1FFF-452B-804A-74E094ED7DD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conturator", "Conturator\Conturator.csproj", "{D390AD18-C947-4389-9CEB-BA5566A88920}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conturator2", "Conturator2\Conturator2.csproj", "{534CBA11-62D2-47FF-8D5C-9C481445FE11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{3C73D392-1FFF-452B-804A-74E094ED7DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C73D392-1FFF-452B-804A-74E094ED7DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C73D392-1FFF-452B-804A-74E094ED7DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D390AD18-C947-4389-9CEB-BA5566A88920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D390AD18-C947-4389-9CEB-BA5566A88920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D390AD18-C947-4389-9CEB-BA5566A88920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D390AD18-C947-4389-9CEB-BA5566A88920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{534CBA11-62D2-47FF-8D5C-9C481445FE11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{534CBA11-62D2-47FF-8D5C-9C481445FE11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{534CBA11-62D2-47FF-8D5C-9C481445FE11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{534CBA11-62D2-47FF-8D5C-9C481445FE11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

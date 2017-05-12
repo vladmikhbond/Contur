@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Contur;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Contur
+
+namespace Conturator
 {
     public partial class MainForm : Form
     {
@@ -26,7 +28,7 @@ namespace Contur
         private void Conturing(Point startPoint)
         {
             int step = Convert.ToInt32(stepBox.Text);
-            points = Contur.Conturing((Bitmap)pBox.Image, step, startPoint);
+            points = Contur.Contur.Conturing((Bitmap)pBox.Image, step, startPoint);
             Graphics g = pBox.CreateGraphics();
             g.DrawPolygon(Pens.Red, points.ToArray());
 
@@ -100,7 +102,7 @@ namespace Contur
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             int step = Convert.ToInt32(stepBox.Text);
-            var conturs = Contur.GetAllConturs((Bitmap)pBox.Image, step);
+            var conturs = Contur.Contur.GetAllConturs((Bitmap)pBox.Image, step);
 
             //Graphics g = pBox.CreateGraphics();
             //g.DrawPolygon(Pens.Red, points.ToArray());

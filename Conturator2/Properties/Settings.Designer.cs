@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Conturator.Properties
+namespace Conturator2.Properties
 {
 
 
