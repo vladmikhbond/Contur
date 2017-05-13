@@ -8,43 +8,49 @@ using System.Threading.Tasks;
 namespace Contur
 {
     /// <summary>
+    /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
+    /// public static:  GetAllConturs(img, step), GetOneContur(img, step, point),  
     /// </summary>
     public class Contur
     {
         Bitmap _img;
         int _step;
 
-
-        int[,] dots;         // разведочная сетка : 0 - empty, 1-visited
+        int[,] dots;         // разведочная сетка : 0 - empty, 1,2,3... - contur numbers
         List<Point> points;  // точки для рекурсивной процедуры
-
+        int dotСhrome;       // "цвет" закрашенных точек
 
         private Contur(Bitmap img, int step)
         {
             _img = img;
             _step = step;
             dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
+            dotСhrome = 1;
         }
 
+        // Return list of all conturs on the image.
+        // can throw StackOverflowException
+        //
         public static List<Point[]> GetAllConturs(Bitmap image, int step)
         {
             List<Point[]> conturs = new List<Point[]>();
             var contur = new Contur(image, step);
-            foreach (var t in contur.GetEmptyDots())
+            foreach (var t in contur.EmptyDotsIterator())
             {
                 var startPoint = new Point(t.Item1 * step, t.Item2 * step);
                 var ps = contur.SetPointsOnBorder(startPoint);
-                if (ps.Count > 3)
+                if (ps.Count > 8)
                 {
-                    var ps2 = contur.MakeContur(ps, thinOut: false);
+                    var ps2 = contur.ConturFromPoints(ps, thinOut: false);
                     conturs.Add(ps2.ToArray());
                 }
+                contur.dotСhrome++;
             }
             return conturs;
         }
 
-        private IEnumerable<Tuple<int, int>> GetEmptyDots()
+        private IEnumerable<Tuple<int, int>> EmptyDotsIterator()
         {
             for (int xo = 1; xo < dots.GetLength(0) - 1; xo++)
                 for (int yo = 1; yo < dots.GetLength(1) - 1; yo++)
@@ -60,11 +66,11 @@ namespace Contur
         /// <param name="step">размер ячейки разведочной сетки</param>
         /// <param name="startPoint">точка, вокруг которой...</param>
         /// <returns></returns>
-        public static Point[] Conturing(Bitmap image, int step, Point startPoint)
+        public static Point[] GetOneContur(Bitmap image, int step, Point startPoint)
         {
             var contur = new Contur(image, step);
             var ps = contur.SetPointsOnBorder(startPoint);
-            ps = contur.MakeContur(ps, thinOut: true);
+            ps = contur.ConturFromPoints(ps, thinOut: false);
             return ps.ToArray();
         }
 
@@ -79,7 +85,7 @@ namespace Contur
             points = new List<Point>();
             int ox = startPoint.X / _step;
             int oy = startPoint.Y / _step;
-            FloodFill(ox, oy);
+            FloodFillRecursive(ox, oy);
             return points;
         }
 
@@ -90,8 +96,10 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<Point> MakeContur(List<Point> points, bool thinOut=false)
+        List<Point> ConturFromPoints(List<Point> points, bool thinOut=false)
         {
+            int MIN_DIST = _step * _step / 2;
+            int MAX_DIST = _step * _step * 9;
             List<Point> input = new List<Point>(points);
             List<Point> output = new List<Point>();
 
@@ -104,8 +112,8 @@ namespace Contur
                 var dists = input.Select(p => Dist(p, last));
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
-                // слишком близкие точки пропускаем
-                if (!thinOut || minDist > _step * _step / 4)
+                // слишком близкие и слишком далекие точки пропускаем
+                if ((!thinOut || minDist > MIN_DIST) && (minDist < MAX_DIST))
                 {
                     last = input[minIdx];
                     output.Add(last);
@@ -138,16 +146,16 @@ namespace Contur
         /// если по пути встречаем зеленый пиксель, то создаем контурную точку на месте зеленого пикселя
         /// если зеленый пиксель не встретился, вызываем FloodFill на левом соседе.
         /// -- так же проверяем правого, верхнего и нихнего соседей
-        void FloodFill(int ox, int oy)
+        void FloodFillRecursive(int ox, int oy)
         {
-            dots[ox, oy] = 1;
-            if (ox > 0 && dots[ox - 1, oy] == 0)
+            dots[ox, oy] = dotСhrome;
+            if (ox > 0 && dots[ox - 1, oy] < dotСhrome)
                 SneakLeft(ox, oy);
-            if (_step * (ox + 1) < _img.Width && dots[ox + 1, oy] == 0)
+            if (_step * (ox + 1) < _img.Width && dots[ox + 1, oy] < dotСhrome)
                 SneakRight(ox, oy);
-            if (oy > 0 && dots[ox, oy - 1] == 0)
+            if (oy > 0 && dots[ox, oy - 1] < dotСhrome)
                 SneakUp(ox, oy);
-            if (_step * (oy + 1) < _img.Height && dots[ox, oy + 1] == 0)
+            if (_step * (oy + 1) < _img.Height && dots[ox, oy + 1] < dotСhrome)
                 SneakDown(ox, oy);
         }
 
@@ -162,7 +170,7 @@ namespace Contur
                     return;
                 }
             }
-            FloodFill(ox - 1, oy);
+            FloodFillRecursive(ox - 1, oy);
         }
 
         private void SneakRight(int ox, int oy)
@@ -176,7 +184,7 @@ namespace Contur
                     return;
                 }
             }
-            FloodFill(ox + 1, oy);
+            FloodFillRecursive(ox + 1, oy);
         }
 
         private void SneakUp(int ox, int oy)
@@ -190,7 +198,7 @@ namespace Contur
                     return;
                 }
             }
-            FloodFill(ox, oy - 1);
+            FloodFillRecursive(ox, oy - 1);
         }
 
         private void SneakDown(int ox, int oy)
@@ -204,7 +212,7 @@ namespace Contur
                     return;
                 }
             }
-            FloodFill(ox, oy + 1);
+            FloodFillRecursive(ox, oy + 1);
         }
 
     }

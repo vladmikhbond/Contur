@@ -28,7 +28,7 @@ namespace Conturator
         private void Conturing(Point startPoint)
         {
             int step = Convert.ToInt32(stepBox.Text);
-            points = Contur.Contur.Conturing((Bitmap)pBox.Image, step, startPoint);
+            points = Contur.Contur.GetOneContur((Bitmap)pBox.Image, step, startPoint);
             Graphics g = pBox.CreateGraphics();
             g.DrawPolygon(Pens.Red, points.ToArray());
 

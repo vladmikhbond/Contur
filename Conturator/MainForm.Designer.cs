@@ -48,10 +48,9 @@
             // pBox
             // 
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pBox.Image = ((System.Drawing.Image)(resources.GetObject("pBox.Image")));
             this.pBox.InitialImage = null;
             this.pBox.Location = new System.Drawing.Point(9, 38);
-            this.pBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pBox.Margin = new System.Windows.Forms.Padding(2);
             this.pBox.Name = "pBox";
             this.pBox.Size = new System.Drawing.Size(852, 506);
             this.pBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -156,7 +155,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.Text = "Contur";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);

@@ -81,7 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="conturs.txt" />
-    <Content Include="UkraineContur.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Contur\Contur.csproj">

@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 namespace Contur
 {
     /// <summary>
-    /// Exports: this[key], Load, Save, GetPoligonePointInto
+    /// Класс для работы с готовым словарем контуров.
+    /// 
+    /// public:  ctor, this[string key], Save(), GetPoligonePointInto()
     /// </summary>
     public class Conturs
     {
@@ -19,7 +21,7 @@ namespace Contur
 
         public Conturs()
         {
-            dict = Load();
+            Load();
         }
 
         public Point[] this[string key]
@@ -38,18 +40,24 @@ namespace Contur
             dict.Remove(key);
         }
 
-        public static Dictionary<string, Point[]> Load()
+        void Load()
         {
             if (!File.Exists(FILE_NAME))
-                return new Dictionary<string, Point[]>();
-
-            return File.ReadAllLines(FILE_NAME)
-                .Select(line => line.Split(':'))
-                .Where(ss => ss.Length == 2)
-                .Select(ss => new { key = ss[0].Trim(), val = TextToPointArray(ss[1]) })
-                .ToDictionary(v => v.key, v => v.val);
+            {
+                dict = new Dictionary<string, Point[]>();
+            }
+            else
+            {
+                dict = File.ReadAllLines(FILE_NAME)
+                    .Select(line => line.Split(':'))
+                    .Where(ss => ss.Length == 2)
+                    .Select(ss => new { key = ss[0].Trim(), val = TextToPointArray(ss[1]) })
+                    .ToDictionary(v => v.key, v => v.val);
+            }
         }
 
+        // Save poligones dictionary in the file FILE_NAME
+        // format is:   "key" : 12,34,56,...
         public void Save()
         {
             StringBuilder sb = new StringBuilder();
@@ -61,9 +69,12 @@ namespace Contur
             File.WriteAllText(FILE_NAME, sb.ToString());
         }
 
-        // text is a string like "22,22,33,33,44,44,"
+
+
         static Point[] TextToPointArray(string text, int m = 1)
         {
+            // text is a string like "22,22,33,33,44,44,"
+
             var ss = text.Split(',');
             var v = new List<Point>();
 
@@ -76,6 +87,10 @@ namespace Contur
             return v.ToArray();
         }
 
+        
+        // Get poligone containing the point. 
+        // Return dict key as a string.
+        //
         public string GetPoligonePointInto(Point p)
         {
             foreach (var pair in dict)
