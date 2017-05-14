@@ -14,6 +14,7 @@ namespace Contur
     /// </summary>
     public class Contur
     {
+        const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;
         int _step;
 
@@ -40,7 +41,7 @@ namespace Contur
             {
                 var startPoint = new Point(t.Item1 * step, t.Item2 * step);
                 var ps = contur.SetPointsOnBorder(startPoint);
-                if (ps.Count > 8)
+                if (ps.Count > MIN_POINTS_IN_CONTUR)
                 {
                     var ps2 = contur.ConturFromPoints(ps, thinOut: false);
                     conturs.Add(ps2.ToArray());
@@ -70,8 +71,12 @@ namespace Contur
         {
             var contur = new Contur(image, step);
             var ps = contur.SetPointsOnBorder(startPoint);
-            ps = contur.ConturFromPoints(ps, thinOut: false);
-            return ps.ToArray();
+            if (ps.Count > MIN_POINTS_IN_CONTUR)
+            {
+                ps = contur.ConturFromPoints(ps, thinOut: false);
+                return ps.ToArray();
+            }
+            return null;
         }
 
         /// внешние имена: вход: step;    выход: points, dots
@@ -213,6 +218,25 @@ namespace Contur
                 }
             }
             FloodFillRecursive(ox, oy + 1);
+        }
+
+
+        public static bool IsInside(Point[] ps, Point p)
+        {
+            bool result = false;
+            int j = ps.Count() - 1;
+            for (int i = 0; i < ps.Count(); i++)
+            {
+                if (ps[i].Y < p.Y && ps[j].Y >= p.Y || ps[j].Y < p.Y && ps[i].Y >= p.Y)
+                {
+                    if (ps[i].X + (p.Y - ps[i].Y) / (ps[j].Y - ps[i].Y) * (ps[j].X - ps[i].X) < p.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
         }
 
     }

@@ -95,29 +95,12 @@ namespace Contur
         {
             foreach (var pair in dict)
             {
-                if (IsInside(pair.Value, p))
+                if (Contur.IsInside(pair.Value, p))
                     return pair.Key;
             }
             return null;
         }
 
-        static bool IsInside(Point[] ps, Point p)
-        {
-            bool result = false;
-            int j = ps.Count() - 1;
-            for (int i = 0; i < ps.Count(); i++)
-            {
-                if (ps[i].Y < p.Y && ps[j].Y >= p.Y || ps[j].Y < p.Y && ps[i].Y >= p.Y)
-                {
-                    if (ps[i].X + (p.Y - ps[i].Y) / (ps[j].Y - ps[i].Y) * (ps[j].X - ps[i].X) < p.X)
-                    {
-                        result = !result;
-                    }
-                }
-                j = i;
-            }
-            return result;
-        }
 
 
     }

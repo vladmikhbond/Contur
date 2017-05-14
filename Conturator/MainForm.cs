@@ -29,10 +29,15 @@ namespace Conturator
         {
             int step = Convert.ToInt32(stepBox.Text);
             points = Contur.Contur.GetOneContur((Bitmap)pBox.Image, step, startPoint);
-            Graphics g = pBox.CreateGraphics();
-            g.DrawPolygon(Pens.Red, points.ToArray());
-
-            infoLabel.Text = $"Points = {points.Length}";
+            if (points != null)
+            {
+                Graphics g = pBox.CreateGraphics();
+                g.DrawPolygon(Pens.Red, points);
+                infoLabel.Text = $"Points = {points.Length}";
+            } else
+            {
+                infoLabel.Text = "No conturs";
+            }
         }
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)

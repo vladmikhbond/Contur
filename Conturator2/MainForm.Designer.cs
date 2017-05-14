@@ -39,6 +39,7 @@
             this.infoLabel = new System.Windows.Forms.ToolStripLabel();
             this.allButton = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.claerButton = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -47,21 +48,22 @@
             // 
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pBox.InitialImage = null;
-            this.pBox.Location = new System.Drawing.Point(9, 38);
+            this.pBox.Location = new System.Drawing.Point(11, 47);
             this.pBox.Margin = new System.Windows.Forms.Padding(2);
             this.pBox.Name = "pBox";
             this.pBox.Size = new System.Drawing.Size(871, 522);
             this.pBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pBox.TabIndex = 0;
             this.pBox.TabStop = false;
-            this.pBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pBox_Paint);
             this.pBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseDown);
             this.pBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseMove);
+            this.pBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseUp);
             // 
             // toolStrip1
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.claerButton,
             this.loadButton,
             this.toolStripSeparator1,
             this.toolStripLabel1,
@@ -71,7 +73,7 @@
             this.allButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(873, 45);
+            this.toolStrip1.Size = new System.Drawing.Size(892, 45);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -101,7 +103,7 @@
             // 
             this.stepBox.Name = "stepBox";
             this.stepBox.Size = new System.Drawing.Size(25, 45);
-            this.stepBox.Text = "5";
+            this.stepBox.Text = "10";
             this.stepBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // toolStripSeparator2
@@ -126,21 +128,31 @@
             this.allButton.Image = ((System.Drawing.Image)(resources.GetObject("allButton.Image")));
             this.allButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.allButton.Name = "allButton";
-            this.allButton.Size = new System.Drawing.Size(37, 42);
-            this.allButton.Text = "  All  ";
+            this.allButton.Size = new System.Drawing.Size(70, 42);
+            this.allButton.Text = "All Conturs";
             this.allButton.Click += new System.EventHandler(this.allButton_Click);
+            // 
+            // claerButton
+            // 
+            this.claerButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.claerButton.Image = ((System.Drawing.Image)(resources.GetObject("claerButton.Image")));
+            this.claerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.claerButton.Name = "claerButton";
+            this.claerButton.Size = new System.Drawing.Size(38, 42);
+            this.claerButton.Text = "Clear";
+            this.claerButton.Click += new System.EventHandler(this.claerButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(873, 562);
+            this.ClientSize = new System.Drawing.Size(892, 581);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
-            this.Text = "Contur";
+            this.Text = "Conturator2";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).EndInit();
             this.toolStrip1.ResumeLayout(false);
@@ -162,6 +174,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton allButton;
+        private System.Windows.Forms.ToolStripButton claerButton;
     }
 }
 
