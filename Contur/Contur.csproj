@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XContur.cs" />
     <Compile Include="Contur.cs" />
     <Compile Include="Conturs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
