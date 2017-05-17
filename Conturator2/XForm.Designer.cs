@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.claerButton = new System.Windows.Forms.ToolStripButton();
             this.loadButton = new System.Windows.Forms.ToolStripButton();
+            this.clearButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.stepBox = new System.Windows.Forms.ToolStripTextBox();
@@ -40,6 +40,7 @@
             this.allButton = new System.Windows.Forms.ToolStripButton();
             this.pBox = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.messBox = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.SuspendLayout();
@@ -48,29 +49,19 @@
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.claerButton,
             this.loadButton,
             this.toolStripSeparator1,
             this.toolStripLabel1,
             this.stepBox,
             this.toolStripSeparator2,
             this.infoLabel,
-            this.allButton});
+            this.allButton,
+            this.clearButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1189, 45);
+            this.toolStrip1.Size = new System.Drawing.Size(1125, 45);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // claerButton
-            // 
-            this.claerButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.claerButton.Image = ((System.Drawing.Image)(resources.GetObject("claerButton.Image")));
-            this.claerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.claerButton.Name = "claerButton";
-            this.claerButton.Size = new System.Drawing.Size(47, 42);
-            this.claerButton.Text = "Clear";
-            this.claerButton.Click += new System.EventHandler(this.claerButton_Click);
             // 
             // loadButton
             // 
@@ -81,6 +72,16 @@
             this.loadButton.Size = new System.Drawing.Size(92, 42);
             this.loadButton.Text = "Load Image";
             this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+            // 
+            // clearButton
+            // 
+            this.clearButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.clearButton.Image = ((System.Drawing.Image)(resources.GetObject("clearButton.Image")));
+            this.clearButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(47, 42);
+            this.clearButton.Text = "Clear";
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // toolStripSeparator1
             // 
@@ -98,7 +99,7 @@
             // 
             this.stepBox.Name = "stepBox";
             this.stepBox.Size = new System.Drawing.Size(32, 45);
-            this.stepBox.Text = "50";
+            this.stepBox.Text = "25";
             this.stepBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // toolStripSeparator2
@@ -125,13 +126,13 @@
             this.allButton.Name = "allButton";
             this.allButton.Size = new System.Drawing.Size(85, 42);
             this.allButton.Text = "All Conturs";
+            this.allButton.Click += new System.EventHandler(this.allButton_Click);
             // 
             // pBox
             // 
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pBox.Image = ((System.Drawing.Image)(resources.GetObject("pBox.Image")));
             this.pBox.InitialImage = null;
-            this.pBox.Location = new System.Drawing.Point(26, 72);
+            this.pBox.Location = new System.Drawing.Point(12, 47);
             this.pBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pBox.Name = "pBox";
             this.pBox.Size = new System.Drawing.Size(871, 522);
@@ -139,11 +140,24 @@
             this.pBox.TabIndex = 3;
             this.pBox.TabStop = false;
             // 
+            // messBox
+            // 
+            this.messBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.messBox.Location = new System.Drawing.Point(898, 47);
+            this.messBox.Multiline = true;
+            this.messBox.Name = "messBox";
+            this.messBox.ReadOnly = true;
+            this.messBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.messBox.Size = new System.Drawing.Size(215, 522);
+            this.messBox.TabIndex = 5;
+            // 
             // XForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1189, 715);
+            this.ClientSize = new System.Drawing.Size(1125, 613);
+            this.Controls.Add(this.messBox);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
             this.Name = "XForm";
@@ -159,7 +173,7 @@
         #endregion
 
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton claerButton;
+        private System.Windows.Forms.ToolStripButton clearButton;
         private System.Windows.Forms.ToolStripButton loadButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
@@ -169,5 +183,6 @@
         private System.Windows.Forms.ToolStripButton allButton;
         private System.Windows.Forms.PictureBox pBox;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.TextBox messBox;
     }
 }

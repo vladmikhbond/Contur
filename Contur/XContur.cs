@@ -24,64 +24,147 @@ namespace Contur
     /// </summary>
     public class XContur
     {
-        //const int MIN_POINTS_IN_CONTUR = 8;
+        const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;
         int _step;
 
-        int[,] dots;         // разведочная сетка : 0 - empty, 1,2,3... - contur numbers
-        int dotСhrome;       // "цвет" закрашенных точек
-        //List<Point> points;  // точки для рекурсивной процедуры
+        public int[,] dots;         // scout net : 0 - empty, 1,2,3... - contur chromes
+        public int dotСhrome;       // "цвет" закрашенных точек
+        public List<CPoint> cpoints; // общая коллекция цветных точек 
 
         public XContur(Bitmap img, int step)
         {
             _img = img;
             _step = step;
-            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
-            dotСhrome = 0;
+
         }
+
+        public List<Point[]> GetAllConturs()
+        {
+            List<Point[]> conturs = new List<Point[]>();
+            for (int chrome = 1; chrome <= dotСhrome; chrome++)
+            {
+                var cps = cpoints
+                    .Where(p => p.Chrome == chrome)
+                    .Select(p => p.P);
+                if (cps.Count() >= MIN_POINTS_IN_CONTUR)
+                {
+                    Point[] ps = ConturFromPoints(cps).ToArray();
+                    conturs.Add(ps);
+                }
+            }
+            return conturs;
+        }
+
+        /// создает контур из неупорядоченного множества точек
+        /// input: points     output: 
+        /// 
+        /// берем первую точку из входного массива и переносим в выходной
+        /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
+        /// продолжаем переносить, пока точки во входном массве не закончатся
+        /// 
+        List<Point> ConturFromPoints(IEnumerable<Point> points, bool thinOut = false)
+        {
+            int MIN_DIST = _step * _step / 2;
+            int MAX_DIST = _step * _step * 9;
+            List<Point> input = new List<Point>(points);
+            List<Point> output = new List<Point>();
+
+            var last = input[0];
+            output.Add(last);
+            input.RemoveAt(0);
+
+            while (input.Count > 0)
+            {
+                var dists = input.Select(p => Dist(p, last));
+                double minDist = dists.Min();
+                int minIdx = dists.ToList().IndexOf(minDist);
+                // слишком близкие и слишком далекие точки пропускаем
+                if ((!thinOut || minDist > MIN_DIST) && (minDist < MAX_DIST))
+                {
+                    last = input[minIdx];
+                    output.Add(last);
+                }
+                input.RemoveAt(minIdx);
+            }
+            return output;
+
+        }
+
+        private static double Dist(Point p1, Point p2)
+        {
+            int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
+            return dx * dx + dy * dy;
+        }
+
 
         public void FludFill()
         {
+            cpoints = new List<CPoint>();
+            dots = new int[_img.Width / _step, _img.Height / _step];
+            dotСhrome = 0;
+
             for (int xo = 0; xo < dots.GetLength(0); xo++)
                 for (int yo = 0; yo < dots.GetLength(1); yo++)
                     if (dots[xo, yo] == 0)
                         WorkAround(xo, yo);
-
         }
 
         private void WorkAround(int xo, int yo)
         {
+            var locals = new List<CPoint>();
+
             // left neighbor is painted 
             if (xo > 0 && dots[xo - 1, yo] != 0)
             {
-                if (PathToLeft(xo, yo) == -1)
+                int x = PathToLeft(xo, yo);
+                if (x == -1)
                     PaintDot(xo, yo, xo - 1, yo);
+                else
+                    locals.Add(new CPoint(x, yo * _step, dots[xo - 1, yo]));
             }
+
             // right neighbor is painted 
-            else if (xo < dots.GetLength(0) - 1 && dots[xo + 1, yo] != 0)
+            if (xo < dots.GetLength(0) - 1 && dots[xo + 1, yo] != 0)
             {
-                if (PathToLeft(xo, yo) == -1)
+                int x = PathToRight(xo, yo);
+                if ( x == -1)
                     PaintDot(xo, yo, xo + 1, yo);
+                else
+                    locals.Add(new CPoint(x, yo * _step, dots[xo + 1, yo]));
             }
+
             // upper neighbor is painted 
-            else if (yo > 0 && dots[xo, yo - 1] != 0)
+            if (yo > 0 && dots[xo, yo - 1] != 0)
             {
-                if (PathToUp(xo, yo) == -1)
+                int y = PathToUp(xo, yo);
+                if (y == -1)
                     PaintDot(xo, yo, xo, yo - 1);
+                else
+                    locals.Add(new CPoint(xo * _step, y, dots[xo, yo - 1]));
             }
+
             // down neighbor is painted 
-            else if (yo < dots.GetLength(1) - 1 && dots[xo, yo + 1] != 0)
+            if (yo < dots.GetLength(1) - 1 && dots[xo, yo + 1] != 0)
             {
-                if (PathToDown(xo, yo) == -1)
+                int y = PathToDown(xo, yo);
+                if (y == -1)
                     PaintDot(xo, yo, xo, yo + 1);
+                else
+                    locals.Add(new CPoint(xo * _step, y, dots[xo, yo + 1]));
             }
-            // no neighbor is painted
-            else
+
+            // no neighbor is painted, paint a dot in the next chrome
+            if (dots[xo, yo] == 0)
             {
                 dotСhrome++;
                 dots[xo, yo] = dotСhrome;
-
             }
+
+            // add local cpoints to common collection
+            cpoints.AddRange(locals);
+            cpoints.AddRange(locals.Select(p => new CPoint(p.P, dots[xo, yo])));
+
         }
 
         private int PathToLeft(int xo, int yo)
@@ -135,6 +218,9 @@ namespace Contur
                 for (int yo = 0; yo < dots.GetLength(1); yo++)
                     if (dots[xo, yo] == chrome1)
                         dots[xo, yo] = chrome2;
+            for (int i = 0; i < cpoints.Count; i++)
+                if (cpoints[i].Chrome == chrome1)
+                    cpoints[i].Chrome = chrome2;
         }
 
 
