@@ -119,7 +119,7 @@ namespace Contur
             {
                 int x = PathToLeft(xo, yo);
                 if (x == -1)
-                    PaintDot(xo, yo, xo - 1, yo);
+                    PaintDot(xo, yo, dots[xo - 1, yo]);
                 else
                     locals.Add(new CPoint(x, yo * _step, dots[xo - 1, yo]));
             }
@@ -129,7 +129,7 @@ namespace Contur
             {
                 int x = PathToRight(xo, yo);
                 if ( x == -1)
-                    PaintDot(xo, yo, xo + 1, yo);
+                    PaintDot(xo, yo, dots[xo + 1, yo]);
                 else
                     locals.Add(new CPoint(x, yo * _step, dots[xo + 1, yo]));
             }
@@ -139,7 +139,7 @@ namespace Contur
             {
                 int y = PathToUp(xo, yo);
                 if (y == -1)
-                    PaintDot(xo, yo, xo, yo - 1);
+                    PaintDot(xo, yo, dots[xo, yo - 1]);
                 else
                     locals.Add(new CPoint(xo * _step, y, dots[xo, yo - 1]));
             }
@@ -149,7 +149,7 @@ namespace Contur
             {
                 int y = PathToDown(xo, yo);
                 if (y == -1)
-                    PaintDot(xo, yo, xo, yo + 1);
+                    PaintDot(xo, yo, dots[xo, yo + 1]);
                 else
                     locals.Add(new CPoint(xo * _step, y, dots[xo, yo + 1]));
             }
@@ -178,7 +178,7 @@ namespace Contur
 
         private int PathToRight(int xo, int yo)
         {
-            int x1 = xo * _step, x2 = (xo + 1) * _step, y = yo * _step;
+            int x1 = xo * _step, x2 = Math.Min((xo + 1) * _step, _img.Width - 1), y = yo * _step;
             for (int x = x1; x < x2; x++)
                 if (IsOnBoard(x, y))
                     return x;
@@ -196,7 +196,7 @@ namespace Contur
 
         private int PathToDown(int xo, int yo)
         {
-            int y1 = yo * _step,y2 = (yo + 1) * _step, x = xo * _step;
+            int y1 = yo * _step, y2 = Math.Min((yo + 1) * _step, _img.Height - 1), x = xo * _step;
             for (int y = y1; y < y2; y++)
                 if (IsOnBoard(x, y))
                     return y;
@@ -204,12 +204,12 @@ namespace Contur
         }
 
 
-        private void PaintDot(int xo, int yo, int xo1, int yo1)
+        private void PaintDot(int xo, int yo, int chrome)
         {
             if (dots[xo, yo] == 0)
-                dots[xo, yo] = dots[xo1, yo1];
+                dots[xo, yo] = chrome;
             else
-                RepaintDots(dots[xo1, yo1], dots[xo, yo]);
+                RepaintDots(chrome, dots[xo, yo]);
         }
 
         private void RepaintDots(int chrome1, int chrome2)

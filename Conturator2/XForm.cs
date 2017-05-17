@@ -51,11 +51,14 @@ namespace Conturator2
             xc.FludFill();
             var conturList = xc.GetAllConturs();
 
+            pBox.Refresh();
             Graphics g = pBox.CreateGraphics();
-            //for (int xo = 0; xo < xc.dots.GetLength(0); xo++)
-            //    for (int yo = 0; yo < xc.dots.GetLength(1); yo++)
-            //        g.DrawString(xc.dots[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
-
+            if (step >= 10)
+            {
+                for (int xo = 0; xo < xc.dots.GetLength(0); xo++)
+                    for (int yo = 0; yo < xc.dots.GetLength(1); yo++)
+                        g.DrawString(xc.dots[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
+            }
             //foreach (var p in xc.cpoints)
             //    g.FillRectangle(Brushes.Red, p.P.X - 1, p.P.Y - 1, 3, 3);
 

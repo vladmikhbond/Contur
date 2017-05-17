@@ -1,2 +1,3 @@
 ﻿in Conturator2 
-   - hilight conturs to find the bug (extra lines)
+   - improve performance
+   - solve problems with right and bottom borders (PathToRigt, PathToBottom)

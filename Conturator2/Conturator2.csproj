@@ -96,9 +96,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Images\smile.png" />
     <Content Include="Images\UkraineContur.png" />
     <Content Include="Images\UkraineConturBlack.png" />
     <Content Include="Images\work.png" />
+    <Content Include="Images\work1.png" />
+    <Content Include="Images\work2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
