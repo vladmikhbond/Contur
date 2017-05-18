@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace Conturator2
 {
     public partial class XForm : Form
     {
+        List<Point[]> conturList = new List<Point[]>();
+
         public XForm()
         {
             InitializeComponent();
@@ -48,8 +51,19 @@ namespace Conturator2
         {
             int step = Convert.ToInt32(stepBox.Text);
             XContur xc = new XContur((Bitmap)pBox.Image, step);
+
+            
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             xc.FludFill();
-            var conturList = xc.GetAllConturs();
+            conturList = xc.GetAllConturs();
+
+            stopWatch.Stop();
+            string msec = stopWatch.ElapsedMilliseconds.ToString();
+            
+            // Show results
+
 
             pBox.Refresh();
             Graphics g = pBox.CreateGraphics();
@@ -64,9 +78,43 @@ namespace Conturator2
 
             for (int i = 0; i < conturList.Count; i++)
                 g.DrawPolygon(Pens.Red, conturList[i]);
-            infoLabel.Text = $"Conturs = {conturList.Count()}";
+            infoLabel.Text = $"Conturs = {conturList.Count()}, t = {msec} msec";
 
             messBox.Text = string.Join("\r\n", conturList.Select(c => c.Count().ToString()));      
+        }
+
+        private void pBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            var cs = conturList.Where(c => IsInside(c, e.Location));
+            Graphics g = pBox.CreateGraphics();
+            foreach (var c in cs)
+            {
+                g.DrawPolygon(new Pen(Color.Yellow, 2), c);
+            }
+
+        }
+
+        public static bool IsInside(Point[] ps, Point p)
+        {
+            bool result = false;
+            int j = ps.Count() - 1;
+            for (int i = 0; i < ps.Count(); i++)
+            {
+                if (ps[i].Y < p.Y && ps[j].Y >= p.Y || ps[j].Y < p.Y && ps[i].Y >= p.Y)
+                {
+                    if (ps[i].X + (p.Y - ps[i].Y) / (ps[j].Y - ps[i].Y) * (ps[j].X - ps[i].X) < p.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+        private void pBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            Text = $"{e.X}-{e.Y}";
         }
     }
 }

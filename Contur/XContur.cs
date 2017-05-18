@@ -49,8 +49,9 @@ namespace Contur
                     .Select(p => p.P);
                 if (cps.Count() >= MIN_POINTS_IN_CONTUR)
                 {
-                    Point[] ps = ConturFromPoints(cps).ToArray();
-                    conturs.Add(ps);
+                    var ps = MakeConturFromPointSet(cps);
+                    if (ps != null)
+                       conturs.Add(ps.ToArray());
                 }
             }
             return conturs;
@@ -63,7 +64,7 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<Point> ConturFromPoints(IEnumerable<Point> points, bool thinOut = false)
+        List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
         {
             int MIN_DIST = _step * _step / 2;
             int MAX_DIST = _step * _step * 9;
@@ -79,14 +80,20 @@ namespace Contur
                 var dists = input.Select(p => Dist(p, last));
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
-                // слишком близкие и слишком далекие точки пропускаем
-                if ((!thinOut || minDist > MIN_DIST) && (minDist < MAX_DIST))
+                // слишком далекие точки пропускаем
+                if (minDist < MAX_DIST)
                 {
                     last = input[minIdx];
                     output.Add(last);
+                } else
+                {
+
                 }
                 input.RemoveAt(minIdx);
             }
+            // exclude unclose conturs   //  it is a PATCH
+            if (Dist(output[0], output.Last()) >= MAX_DIST)
+                return null;
             return output;
 
         }

@@ -114,12 +114,13 @@
             this.infoLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
             this.infoLabel.Margin = new System.Windows.Forms.Padding(1, 1, 0, 20);
             this.infoLabel.Name = "infoLabel";
-            this.infoLabel.Size = new System.Drawing.Size(120, 24);
+            this.infoLabel.Size = new System.Drawing.Size(250, 24);
             this.infoLabel.Text = "...";
             this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // allButton
             // 
+            this.allButton.BackColor = System.Drawing.SystemColors.Highlight;
             this.allButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.allButton.Image = ((System.Drawing.Image)(resources.GetObject("allButton.Image")));
             this.allButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -139,6 +140,8 @@
             this.pBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pBox.TabIndex = 3;
             this.pBox.TabStop = false;
+            this.pBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseDown);
+            this.pBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pBox_MouseMove);
             // 
             // messBox
             // 
