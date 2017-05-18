@@ -27,6 +27,8 @@ namespace Conturator2
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 pBox.Image = Image.FromFile(openFileDialog1.FileName);
+                Width = pBox.Width + 220;
+                Height = pBox.Height + 100;
             }
         }
 
@@ -57,7 +59,7 @@ namespace Conturator2
             stopWatch.Start();
 
             xc.FludFill();
-            conturList = xc.GetAllConturs();
+            conturList = xc.MakeAllConturs();
 
             stopWatch.Stop();
             string msec = stopWatch.ElapsedMilliseconds.ToString();

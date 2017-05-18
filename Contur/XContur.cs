@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 // Алгоритм закраски
 //
-// 1. Находим первую незакрашенную точку, идя слева направо, сверху вниз.
-// 2. Проверяем всех закрашенных соседей.Если среди них находим смежного, красим точку в тот же цвет. 
-// Если все закрашенные соседи изолированы, красим точку в новый цвет (и создаем парные цветные точки контуров в местах изоляции).
-// Если есть два смежных разноцветных закрашенных соседа, перекрашиваем все точки младшего цвета в тот цвет, который старше(его номер меньше).
+// 1. Находим первую незакрашенную точку Т, идя слева направо, сверху вниз.
+// 2. Проверяем первого закрашенного соседа. Если он смежный, красим точку Т в его цвет.
+// 3. Проверяем следующего закрашенного соседа. Если он смежный, а точка Т еще не закрашена, красим точку Т в его цвет.
+// 4. Если он смежный, а точка Т уже закрашена, перекрашиваем все точки соседнего цвета в цвет точки Т.
+// 5. Если среди закрашенных соседей нет смежных (т.е. они все изолированы), 
+//    красим точку Т в новый цвет и создаем парные цветные точки контуров в местах изоляции.
 //
 // Собираем контуры из одноцветных закрашенных контурных точек.
 
@@ -20,7 +20,9 @@ namespace Contur
     /// <summary>
     /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
-    /// public static:  GetAllConturs(img, step), GetOneContur(img, step, point),  
+    /// public ctor,  MakeAllConturs() 
+    /// 
+    /// note: internal access level for debugging only
     /// </summary>
     public class XContur
     {
@@ -28,20 +30,21 @@ namespace Contur
         Bitmap _img;
         int _step;
 
-        public int[,] dots;         // scout net : 0 - empty, 1,2,3... - contur chromes
-        public int dotСhrome;       // "цвет" закрашенных точек
-        public List<CPoint> cpoints; // общая коллекция цветных точек 
+        internal int[,] dots;          // scout net : 0 - empty, 1,2,3... - contur chromes
+        internal int dotСhrome;        // "цвет" закрашенных точек
+        internal List<CPoint> cpoints; // общая коллекция цветных точек 
 
         public XContur(Bitmap img, int step)
         {
             _img = img;
             _step = step;
-
         }
 
-        public List<Point[]> GetAllConturs()
+        public List<Point[]> MakeAllConturs()
         {
             List<Point[]> conturs = new List<Point[]>();
+            var v = cpoints.Select(cp => cp.Chrome).Distinct();
+
             for (int chrome = 1; chrome <= dotСhrome; chrome++)
             {
                 var cps = cpoints
@@ -105,10 +108,10 @@ namespace Contur
         }
 
 
-        public void FludFill()
+        internal void FludFill()
         {
             cpoints = new List<CPoint>();
-            dots = new int[_img.Width / _step, _img.Height / _step];
+            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
             dotСhrome = 0;
 
             for (int xo = 0; xo < dots.GetLength(0); xo++)
@@ -236,6 +239,8 @@ namespace Contur
         //
         private bool IsOnBoard(int x, int y)
         {
+            if (x >= _img.Width || y >= _img.Height)
+                return false;
             Color c = _img.GetPixel(x, y);
             return c.R < 255 && c.G < 255 && c.B < 255;
         }

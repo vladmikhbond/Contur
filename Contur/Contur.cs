@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Contur
 {
     /// <summary>
+    /// DEPRECATED!
     /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
     /// public static:  GetAllConturs(img, step), GetOneContur(img, step, point),  
