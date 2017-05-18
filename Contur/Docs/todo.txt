@@ -1,3 +1,2 @@
 ﻿in Conturator2 
-   - improve performance
-   - solved problems with right and bottom borders
+   - автоматическое определение размера шага сетки (по макимальной кривизне)
