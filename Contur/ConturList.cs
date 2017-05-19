@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Contur
 {
-    // export this[int], ctor(),  ctor(),  SaveToFile(fname), ContursAroundPoint(Point)
+    // export this[int], ctor(string fname),  ctor(List<Point[]> list),  SaveToFile(fname), ContursAroundPoint(Point)
     public class ConturList
     {
         List<Point[]> _list;
@@ -56,9 +56,14 @@ namespace Contur
         }
 
 
-        public IEnumerable<Point[]> ContursAroundPoint(Point location)
+        public IEnumerable<Point[]> ContursAroundPoint(Point p)
         {
-            return _list.Where(c => IsInside(c, location));
+            return _list.Where(c => IsInside(c, p)).OrderBy(c => c.Count());
+        }
+
+        public int ConturIdxAroundPoint(Point p)
+        {
+            return _list.TakeWhile(c => !IsInside(c, p)).Count();
         }
 
         static bool IsInside(Point[] ps, Point p)

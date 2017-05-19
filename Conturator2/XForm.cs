@@ -60,7 +60,7 @@ namespace Conturator2
             stopWatch.Start();
 
             xc.FludFill();
-            var cl = xc.MakeAllConturs();
+            List<Point[]> cl = xc.MakeAllConturs();
             conturList = new ConturList(cl);
 
             stopWatch.Stop();
@@ -80,10 +80,14 @@ namespace Conturator2
             //foreach (var p in xc.cpoints)
             //    g.FillRectangle(Brushes.Red, p.P.X - 1, p.P.Y - 1, 3, 3);
 
-            for (int i = 0; i < cl.Count; i++)
-                g.DrawPolygon(Pens.Red, cl[i]);
-            infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
+            //for (int i = 0; i < cl.Count; i++)
+            //    g.DrawPolygon(Pens.Red, cl[i]);
 
+            pBox.Refresh();
+
+
+
+            infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
             messBox.Text = string.Join("\r\n", cl.Select(c => c.Count().ToString()));      
         }
 
@@ -95,6 +99,7 @@ namespace Conturator2
             {
                 g.DrawPolygon(new Pen(Color.Yellow, 2), c);
             }
+            infoLabel.Text = conturList.ConturIdxAroundPoint(e.Location).ToString();
         }
 
         private void pBox_MouseMove(object sender, MouseEventArgs e)
@@ -117,6 +122,16 @@ namespace Conturator2
         {
             if (conturList == null)
                 return;
+            for (int i = 0; i < conturList.List.Count; i++)
+            {
+                var contur = conturList.List[i];
+                e.Graphics.DrawPolygon(Pens.Red, contur);
+                float x = (float)contur.Average(p => p.X);
+                float y = (float)contur.Average(p => p.Y);
+                e.Graphics.DrawString(i.ToString(), Font, Brushes.Black, x, y);
+            }
+
+
             foreach (var list in conturList.List)
                 e.Graphics.DrawPolygon(Pens.Red, list);
 
