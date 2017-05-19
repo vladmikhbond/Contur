@@ -63,7 +63,7 @@
             this.clearButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1436, 45);
+            this.toolStrip1.Size = new System.Drawing.Size(1132, 45);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -162,13 +162,13 @@
             // 
             this.messBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.messBox.Location = new System.Drawing.Point(1205, 58);
+            this.messBox.Location = new System.Drawing.Point(901, 58);
             this.messBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.messBox.Multiline = true;
             this.messBox.Name = "messBox";
             this.messBox.ReadOnly = true;
             this.messBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messBox.Size = new System.Drawing.Size(215, 642);
+            this.messBox.Size = new System.Drawing.Size(215, 522);
             this.messBox.TabIndex = 5;
             // 
             // loadFileButton
@@ -185,7 +185,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1436, 714);
+            this.ClientSize = new System.Drawing.Size(1132, 598);
             this.Controls.Add(this.messBox);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
