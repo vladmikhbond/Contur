@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 
 // Алгоритм закраски
@@ -20,7 +21,7 @@ namespace Contur
     /// <summary>
     /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
-    /// public ctor,  MakeAllConturs() 
+    /// public ctor,  MakeAllConturs(), ToString
     /// 
     /// note: internal access level for debugging only
     /// </summary>
@@ -30,7 +31,7 @@ namespace Contur
         Bitmap _img;
         int _step;
 
-        internal int[,] dots;          // scout net : 0 - empty, 1,2,3... - contur chromes
+        public int[,] dots;            // scout net : 0 - empty, 1,2,3... - contur chromes
         internal int dotСhrome;        // "цвет" закрашенных точек
         internal List<CPoint> cpoints; // общая коллекция цветных точек 
 
@@ -42,7 +43,7 @@ namespace Contur
 
         public List<Point[]> MakeAllConturs()
         {
-            List<Point[]> conturs = new List<Point[]>();
+            var conturs = new List<Point[]>();
             var v = cpoints.Select(cp => cp.Chrome).Distinct();
 
             for (int chrome = 1; chrome <= dotСhrome; chrome++)
@@ -59,6 +60,7 @@ namespace Contur
             }
             return conturs;
         }
+
 
         /// создает контур из неупорядоченного множества точек
         /// input: points     output: 
@@ -108,7 +110,7 @@ namespace Contur
         }
 
 
-        internal void FludFill()
+        public void FludFill()
         {
             cpoints = new List<CPoint>();
             dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];

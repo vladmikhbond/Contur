@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Conturator2
 {
     public partial class XForm : Form
     {
-        List<Point[]> conturList = new List<Point[]>();
+        ConturList conturList;
 
         public XForm()
         {
@@ -59,7 +60,8 @@ namespace Conturator2
             stopWatch.Start();
 
             xc.FludFill();
-            conturList = xc.MakeAllConturs();
+            var cl = xc.MakeAllConturs();
+            conturList = new ConturList(cl);
 
             stopWatch.Stop();
             string msec = stopWatch.ElapsedMilliseconds.ToString();
@@ -78,45 +80,46 @@ namespace Conturator2
             //foreach (var p in xc.cpoints)
             //    g.FillRectangle(Brushes.Red, p.P.X - 1, p.P.Y - 1, 3, 3);
 
-            for (int i = 0; i < conturList.Count; i++)
-                g.DrawPolygon(Pens.Red, conturList[i]);
-            infoLabel.Text = $"Conturs = {conturList.Count()}, t = {msec} msec";
+            for (int i = 0; i < cl.Count; i++)
+                g.DrawPolygon(Pens.Red, cl[i]);
+            infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
 
-            messBox.Text = string.Join("\r\n", conturList.Select(c => c.Count().ToString()));      
+            messBox.Text = string.Join("\r\n", cl.Select(c => c.Count().ToString()));      
         }
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)
         {
-            var cs = conturList.Where(c => IsInside(c, e.Location));
+            var cs = conturList.ContursAroundPoint(e.Location);
             Graphics g = pBox.CreateGraphics();
             foreach (var c in cs)
             {
                 g.DrawPolygon(new Pen(Color.Yellow, 2), c);
             }
-
-        }
-
-        public static bool IsInside(Point[] ps, Point p)
-        {
-            bool result = false;
-            int j = ps.Count() - 1;
-            for (int i = 0; i < ps.Count(); i++)
-            {
-                if (ps[i].Y < p.Y && ps[j].Y >= p.Y || ps[j].Y < p.Y && ps[i].Y >= p.Y)
-                {
-                    if (ps[i].X + (p.Y - ps[i].Y) / (ps[j].Y - ps[i].Y) * (ps[j].X - ps[i].X) < p.X)
-                    {
-                        result = !result;
-                    }
-                }
-                j = i;
-            }
-            return result;
         }
 
         private void pBox_MouseMove(object sender, MouseEventArgs e)
         {
             Text = $"{e.X}-{e.Y}";
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            conturList.SaveToFile("xconturs.txt");
+        }
+
+        private void loadFileButton_Click(object sender, EventArgs e)
+        {
+            conturList = new ConturList("xconturs.txt");
+            pBox.Refresh();
+        }
+
+        private void pBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (conturList == null)
+                return;
+            foreach (var list in conturList.List)
+                e.Graphics.DrawPolygon(Pens.Red, list);
+
         }
     }
 }
