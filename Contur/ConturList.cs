@@ -11,44 +11,32 @@ namespace Contur
     // export this[int], ctor(string fname),  ctor(List<Point[]> list),  SaveToFile(fname), ContursAroundPoint(Point)
     public class ConturList
     {
-        List<Point[]> _list;
+        public List<Point[]> List;
 
         // Create this from file
         //
         public ConturList(List<Point[]> list)
         {
-            this._list = list;
+            List = list;
         }
 
         public ConturList(string fname)
         {
             var lines = File.ReadAllLines(fname);
-            _list = new List<Point[]>();
+            List = new List<Point[]>();
             foreach (string line in lines)
             {
                 var nums = line.Split(',').Select(s => Convert.ToInt32(s)).ToArray();
                 var ps = nums.Select((x, i) => i % 2 == 1 ? new Point(nums[i - 1], x) : new Point(-1, -1)).Where(p => p.X != -1);
-                _list.Add(ps.ToArray());
+                List.Add(ps.ToArray());
             }
         }
 
-        public List<Point[]> List
-        {
-            get { return _list; }
-        }
-
-        public IEnumerable<Point[]> GetEnumerator()
-        {
-            foreach (var l in _list)
-                yield return l;
-        }
-
-
-
+ 
         public void SaveToFile(string fname)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var contur in _list)
+            foreach (var contur in List)
             {
                 sb.AppendLine(string.Join(",", contur.Select(c => $"{c.X},{c.Y}")));
             }
@@ -58,12 +46,12 @@ namespace Contur
 
         public IEnumerable<Point[]> ContursAroundPoint(Point p)
         {
-            return _list.Where(c => IsInside(c, p)).OrderBy(c => c.Count());
+            return List.Where(c => IsInside(c, p)).OrderBy(c => c.Count());
         }
 
         public int ConturIdxAroundPoint(Point p)
         {
-            return _list.TakeWhile(c => !IsInside(c, p)).Count();
+            return List.TakeWhile(c => !IsInside(c, p)).Count();
         }
 
         static bool IsInside(Point[] ps, Point p)
