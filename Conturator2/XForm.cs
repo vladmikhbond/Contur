@@ -131,9 +131,11 @@ namespace Conturator2
                 e.Graphics.DrawString(i.ToString(), Font, Brushes.Black, x, y);
             }
 
-
+            
+            Pen pen = new Pen(Color.Blue, 1);
+            pen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
             foreach (var list in conturList.List)
-                e.Graphics.DrawPolygon(Pens.Red, list);
+                e.Graphics.DrawPolygon(pen, list);
 
         }
     }
