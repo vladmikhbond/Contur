@@ -32,17 +32,18 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.loadButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadFileButton = new System.Windows.Forms.ToolStripButton();
+            this.saveButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.stepBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.infoLabel = new System.Windows.Forms.ToolStripLabel();
             this.allButton = new System.Windows.Forms.ToolStripButton();
-            this.saveButton = new System.Windows.Forms.ToolStripButton();
             this.clearButton = new System.Windows.Forms.ToolStripButton();
             this.pBox = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.messBox = new System.Windows.Forms.TextBox();
-            this.loadFileButton = new System.Windows.Forms.ToolStripButton();
+            this.noImageButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.SuspendLayout();
@@ -60,7 +61,8 @@
             this.toolStripSeparator2,
             this.infoLabel,
             this.allButton,
-            this.clearButton});
+            this.clearButton,
+            this.noImageButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1132, 45);
@@ -81,6 +83,26 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 45);
+            // 
+            // loadFileButton
+            // 
+            this.loadFileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.loadFileButton.Image = ((System.Drawing.Image)(resources.GetObject("loadFileButton.Image")));
+            this.loadFileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.loadFileButton.Name = "loadFileButton";
+            this.loadFileButton.Size = new System.Drawing.Size(73, 42);
+            this.loadFileButton.Text = "Load File";
+            this.loadFileButton.Click += new System.EventHandler(this.loadFileButton_Click);
+            // 
+            // saveButton
+            // 
+            this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
+            this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(44, 42);
+            this.saveButton.Text = "Save";
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // toolStripLabel1
             // 
@@ -123,16 +145,6 @@
             this.allButton.Text = "All Conturs";
             this.allButton.Click += new System.EventHandler(this.allButton_Click);
             // 
-            // saveButton
-            // 
-            this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
-            this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(44, 42);
-            this.saveButton.Text = "Save";
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
-            // 
             // clearButton
             // 
             this.clearButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -145,6 +157,7 @@
             // 
             // pBox
             // 
+            this.pBox.BackColor = System.Drawing.SystemColors.Window;
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pBox.InitialImage = null;
             this.pBox.Location = new System.Drawing.Point(15, 58);
@@ -171,15 +184,15 @@
             this.messBox.Size = new System.Drawing.Size(215, 522);
             this.messBox.TabIndex = 5;
             // 
-            // loadFileButton
+            // noImageButton
             // 
-            this.loadFileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.loadFileButton.Image = ((System.Drawing.Image)(resources.GetObject("loadFileButton.Image")));
-            this.loadFileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.loadFileButton.Name = "loadFileButton";
-            this.loadFileButton.Size = new System.Drawing.Size(73, 42);
-            this.loadFileButton.Text = "Load File";
-            this.loadFileButton.Click += new System.EventHandler(this.loadFileButton_Click);
+            this.noImageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.noImageButton.Image = ((System.Drawing.Image)(resources.GetObject("noImageButton.Image")));
+            this.noImageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.noImageButton.Name = "noImageButton";
+            this.noImageButton.Size = new System.Drawing.Size(63, 42);
+            this.noImageButton.Text = "No Img";
+            this.noImageButton.Click += new System.EventHandler(this.noImageButton_Click);
             // 
             // XForm
             // 
@@ -216,5 +229,6 @@
         private System.Windows.Forms.TextBox messBox;
         private System.Windows.Forms.ToolStripButton saveButton;
         private System.Windows.Forms.ToolStripButton loadFileButton;
+        private System.Windows.Forms.ToolStripButton noImageButton;
     }
 }

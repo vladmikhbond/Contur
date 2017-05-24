@@ -33,7 +33,9 @@ namespace Contur
 
         public int[,] dots;            // scout net : 0 - empty, 1,2,3... - contur chromes
         internal int dotСhrome;        // "цвет" закрашенных точек
-        internal List<CPoint> cpoints; // общая коллекция цветных точек 
+        public List<CPoint> cpoints; // общая коллекция цветных точек 
+
+        public int diagnostic_lostPoints;
 
         public XContur(Bitmap img, int step)
         {
@@ -44,7 +46,6 @@ namespace Contur
         public List<Point[]> MakeAllConturs()
         {
             var conturs = new List<Point[]>();
-            var v = cpoints.Select(cp => cp.Chrome).Distinct();
 
             for (int chrome = 1; chrome <= dotСhrome; chrome++)
             {
@@ -62,8 +63,7 @@ namespace Contur
         }
 
 
-        /// создает контур из неупорядоченного множества точек
-        /// input: points     output: 
+        /// Собирает контур из неупорядоченного множества точек
         /// 
         /// берем первую точку из входного массива и переносим в выходной
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
@@ -71,10 +71,9 @@ namespace Contur
         /// 
         List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
         {
-            int MIN_DIST = _step * _step / 2;
-            int MAX_DIST = _step * _step * 9;
-            List<Point> input = new List<Point>(points);
-            List<Point> output = new List<Point>();
+            int MAX_DIST = _step * _step * 8;
+            var input = new List<Point>(points);
+            var output = new List<Point>();
 
             var last = input[0];
             output.Add(last);
@@ -86,13 +85,13 @@ namespace Contur
                 double minDist = dists.Min();
                 int minIdx = dists.ToList().IndexOf(minDist);
                 // слишком далекие точки пропускаем
-                if (minDist < MAX_DIST)
+                if (minDist <= MAX_DIST)
                 {
                     last = input[minIdx];
                     output.Add(last);
                 } else
                 {
-
+                    diagnostic_lostPoints++;
                 }
                 input.RemoveAt(minIdx);
             }
