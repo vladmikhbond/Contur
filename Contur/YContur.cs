@@ -32,20 +32,23 @@ namespace Contur
         Bitmap _img;
         int _step;
 
-        int[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
+        Chromic[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
+        List<YPoint> cpoints; // общая коллекция цветных точек 
+
         int dotСhrome;        // "цвет" закрашенных точек
-        List<CPoint> cpoints; // общая коллекция цветных точек 
+ 
+
 
         public Point[] Points
         {
-            get { return cpoints.Select(cp => cp.P).ToArray(); }
+            get { return cpoints.Select(cp => cp.Point).ToArray(); }
         }
 
         public int this[int x, int y]
         {
             get
             {
-                return dots[x, y];
+                return dots[x, y].C;
             }
         }
 
@@ -60,13 +63,13 @@ namespace Contur
         public List<Point[]> MakeAllConturs()
         {
             FludFill();
-            var conturs = new List<Point[]>();
 
-            for (int chrome = 1; chrome <= dotСhrome; chrome++)
+            var conturs = new List<Point[]>();
+            for (int chrome = 0; chrome <= dotСhrome; chrome++)
             {
                 var cps = cpoints
-                    .Where(p => p.Chrome == chrome)
-                    .Select(p => p.P);
+                    .Where(p => p.Chromic1.C == chrome || p.Chromic2.C == chrome)
+                    .Select(p => p.Point);
                 if (cps.Count() >= MIN_POINTS_IN_CONTUR)
                 {
                     var ps = MakeConturFromPointSet(cps);
@@ -126,9 +129,15 @@ namespace Contur
 
         void FludFill()
         {
-            cpoints = new List<CPoint>();
-            dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
+            cpoints = new List<YPoint>();
+            // init dots array
+            dots = new Chromic [_img.Width / _step + 1, _img.Height / _step + 1];
             dotСhrome = 0;
+            Chromic zero = new Chromic();
+            for (int xo = 0; xo < dots.GetLength(0); xo++)
+                dots[xo, 0] = zero;
+            for (int yo = 0; yo < dots.GetLength(1); yo++)
+                dots[0, yo] = zero;
 
             for (int xo = 1; xo < dots.GetLength(0); xo++)
             {
@@ -140,8 +149,8 @@ namespace Contur
                     {
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
-                        // перекашиваем левое в верхнее
-                        RepaintDots(dots[xo - 1, yo], dots[xo, yo - 1]);
+                        // перекашиваем  в верхнее
+                        dots[xo - 1, yo].C = dots[xo, yo - 1].C;              
                     }
                     else if (y == -1 && x != -1)
                     {
@@ -149,8 +158,7 @@ namespace Contur
                         dots[xo, yo] = dots[xo, yo - 1];
                         // создаем точку слева
                         var p = new Point(x, yo * _step);
-                        cpoints.Add(new CPoint(p, dots[xo, yo]));
-                        cpoints.Add(new CPoint(p, dots[xo - 1, yo]));
+                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
                     }
                     else if (x == -1 && y != -1)
                     {
@@ -158,21 +166,19 @@ namespace Contur
                         dots[xo, yo] = dots[xo - 1, yo];
                         // создаем точку сверху
                         var p = new Point(xo * _step, y);
-                        cpoints.Add(new CPoint(p, dots[xo, yo]));
-                        cpoints.Add(new CPoint(p, dots[xo, yo - 1]));
+                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
                     }
                     else  // x != -1 && y != -1
                     {
                         // красим в новый цвет
-                        dots[xo, yo] = ++dotСhrome;
+                        dots[xo, yo] = new Chromic { C = ++dotСhrome };
+
                         // создаем точку слева
                         var p = new Point(x, yo * _step);
-                        cpoints.Add(new CPoint(p, dots[xo, yo]));
-                        cpoints.Add(new CPoint(p, dots[xo - 1, yo]));
+                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
                         // создаем точку сверху
                         p = new Point(xo * _step, y);
-                        cpoints.Add(new CPoint(p, dots[xo, yo]));
-                        cpoints.Add(new CPoint(p, dots[xo, yo - 1]));
+                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
                     }
                 }
             }
@@ -196,26 +202,6 @@ namespace Contur
                     return y;
             return -1;
         }
-
-        private void PaintDot(int xo, int yo, int chrome)
-        {
-            if (dots[xo, yo] == 0)
-                dots[xo, yo] = chrome;
-            else
-                RepaintDots(chrome, dots[xo, yo]);
-        }
-
-        private void RepaintDots(int chrome1, int chrome2)
-        {
-            for (int xo = 0; xo < dots.GetLength(0); xo++)
-                for (int yo = 0; yo < dots.GetLength(1); yo++)
-                    if (dots[xo, yo] == chrome1)
-                        dots[xo, yo] = chrome2;
-            for (int i = 0; i < cpoints.Count; i++)
-                if (cpoints[i].Chrome == chrome1)
-                    cpoints[i].Chrome = chrome2;
-        }
-
 
 
         // Test if the point is on a board
