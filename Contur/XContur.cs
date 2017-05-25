@@ -18,6 +18,13 @@ using System.Text;
 
 namespace Contur
 {
+    public interface IContur
+    {
+        Point[] Points { get; }
+        List<Point[]> MakeAllConturs();
+    }
+
+
     /// <summary>
     /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
@@ -25,15 +32,20 @@ namespace Contur
     /// 
     /// note: internal access level for debugging only
     /// </summary>
-    public class XContur
+    public class XContur: IContur
     {
         const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;
         int _step;
 
-        public int[,] dots;            // scout net : 0 - empty, 1,2,3... - contur chromes
-        internal int dotСhrome;        // "цвет" закрашенных точек
-        public List<CPoint> cpoints; // общая коллекция цветных точек 
+        int[,] dots;            // scout net : 0 - empty, 1,2,3... - contur chromes
+        int dotСhrome;        // "цвет" закрашенных точек
+        List<CPoint> cpoints; // общая коллекция цветных точек 
+
+        public Point[] Points
+        {
+            get { return cpoints.Select(cp => cp.P).ToArray(); }
+        }
 
         public int diagnostic_lostPoints;
 
@@ -45,6 +57,7 @@ namespace Contur
 
         public List<Point[]> MakeAllConturs()
         {
+            FludFill();
             var conturs = new List<Point[]>();
 
             for (int chrome = 1; chrome <= dotСhrome; chrome++)
@@ -109,7 +122,7 @@ namespace Contur
         }
 
 
-        public void FludFill()
+        void FludFill()
         {
             cpoints = new List<CPoint>();
             dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];

@@ -58,14 +58,14 @@ namespace Conturator2
             if (pBox.Image == null)
                 pBox.Image = currentImage;
             int step = Convert.ToInt32(stepBox.Text);
-            XContur xc = new XContur((Bitmap)pBox.Image, step);
+            IContur xc = new SContur((Bitmap)pBox.Image, step);
             pBox.Refresh();
 
             
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            xc.FludFill();
+
             List<Point[]> cl = xc.MakeAllConturs();
             conturList = new ConturList(cl);
 
@@ -82,8 +82,8 @@ namespace Conturator2
             //        for (int yo = 0; yo < xc.dots.GetLength(1); yo++)
             //            g.DrawString(xc.dots[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
             //}
-            foreach (var p in xc.cpoints)
-                g.FillRectangle(Brushes.Red, p.P.X - 1, p.P.Y - 1, 3, 3);
+            foreach (var p in xc.Points)
+                g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
 
             //for (int i = 0; i < cl.Count; i++)
             //    g.DrawPolygon(Pens.Red, cl[i]);
@@ -131,6 +131,8 @@ namespace Conturator2
             for (int i = 0; i < conturList.List.Count; i++)
             {
                 var contur = conturList.List[i];
+                if (contur.Count() < 2)
+                    continue;
                 e.Graphics.DrawPolygon(Pens.Red, contur);
                 float x = (float)contur.Average(p => p.X);
                 float y = (float)contur.Average(p => p.Y);
@@ -143,6 +145,8 @@ namespace Conturator2
             int penIdx = 0;
             foreach (var list in conturList.List)
             {
+                if (list.Count() < 2)
+                    continue;
                 e.Graphics.DrawPolygon(pens[penIdx], list);
                 penIdx = (penIdx + 1) % pens.Length;
             }
