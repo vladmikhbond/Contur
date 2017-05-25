@@ -50,6 +50,7 @@ namespace Conturator2
 
         private void clearButton_Click(object sender, EventArgs e)
         {
+            conturList = null;
             pBox.Refresh();
         }
 
@@ -58,42 +59,44 @@ namespace Conturator2
             if (pBox.Image == null)
                 pBox.Image = currentImage;
             int step = Convert.ToInt32(stepBox.Text);
-            IContur xc = new SContur((Bitmap)pBox.Image, step);
+            IContur xc = new YContur((Bitmap)pBox.Image, step);
             pBox.Refresh();
-
-            
+            // t
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-
+            // Main part of work
             List<Point[]> cl = xc.MakeAllConturs();
             conturList = new ConturList(cl);
-
+            
+            // t
             stopWatch.Stop();
             string msec = stopWatch.ElapsedMilliseconds.ToString();
             
-            // Show results
-
-
             Graphics g = pBox.CreateGraphics();
-            //if (step >= 10)
-            //{
-            //    for (int xo = 0; xo < xc.dots.GetLength(0); xo++)
-            //        for (int yo = 0; yo < xc.dots.GetLength(1); yo++)
-            //            g.DrawString(xc.dots[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
-            //}
-            foreach (var p in xc.Points)
-                g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
-
-            //for (int i = 0; i < cl.Count; i++)
-            //    g.DrawPolygon(Pens.Red, cl[i]);
-
-            //pBox.Refresh();
-
+            ShowDots(g, step, (YContur)xc);
+            ShowPoints(g, xc);
 
             infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
             messBox.Text = string.Join("\r\n", cl.Select(c => c.Count().ToString()));      
         }
+
+        private void ShowDots(Graphics g, int step, YContur xc)
+        {
+            if (step >= 10)
+            {
+                for (int xo = 0; xo * step < currentImage.Width; xo++)
+                    for (int yo = 0; yo * step < currentImage.Height; yo++)
+                        g.DrawString(xc[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
+            }
+        }
+
+        private void ShowPoints(Graphics g, IContur xc)
+        {
+            foreach (var p in xc.Points)
+                g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
+        }
+
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)
         {

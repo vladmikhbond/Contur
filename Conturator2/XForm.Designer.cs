@@ -40,10 +40,10 @@
             this.infoLabel = new System.Windows.Forms.ToolStripLabel();
             this.allButton = new System.Windows.Forms.ToolStripButton();
             this.clearButton = new System.Windows.Forms.ToolStripButton();
+            this.noImageButton = new System.Windows.Forms.ToolStripButton();
             this.pBox = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.messBox = new System.Windows.Forms.TextBox();
-            this.noImageButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.SuspendLayout();
@@ -141,8 +141,8 @@
             this.allButton.Image = ((System.Drawing.Image)(resources.GetObject("allButton.Image")));
             this.allButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.allButton.Name = "allButton";
-            this.allButton.Size = new System.Drawing.Size(85, 42);
-            this.allButton.Text = "All Conturs";
+            this.allButton.Size = new System.Drawing.Size(56, 42);
+            this.allButton.Text = "Vector";
             this.allButton.Click += new System.EventHandler(this.allButton_Click);
             // 
             // clearButton
@@ -154,6 +154,16 @@
             this.clearButton.Size = new System.Drawing.Size(47, 42);
             this.clearButton.Text = "Clear";
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            // 
+            // noImageButton
+            // 
+            this.noImageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.noImageButton.Image = ((System.Drawing.Image)(resources.GetObject("noImageButton.Image")));
+            this.noImageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.noImageButton.Name = "noImageButton";
+            this.noImageButton.Size = new System.Drawing.Size(63, 42);
+            this.noImageButton.Text = "No Img";
+            this.noImageButton.Click += new System.EventHandler(this.noImageButton_Click);
             // 
             // pBox
             // 
@@ -183,16 +193,6 @@
             this.messBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.messBox.Size = new System.Drawing.Size(215, 522);
             this.messBox.TabIndex = 5;
-            // 
-            // noImageButton
-            // 
-            this.noImageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.noImageButton.Image = ((System.Drawing.Image)(resources.GetObject("noImageButton.Image")));
-            this.noImageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.noImageButton.Name = "noImageButton";
-            this.noImageButton.Size = new System.Drawing.Size(63, 42);
-            this.noImageButton.Text = "No Img";
-            this.noImageButton.Click += new System.EventHandler(this.noImageButton_Click);
             // 
             // XForm
             // 

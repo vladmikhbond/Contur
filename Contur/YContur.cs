@@ -18,6 +18,7 @@ using System.Text;
 
 namespace Contur
 {
+
     /// <summary>
     /// Класс для изготовления контуров на основе монохромного контурного изображения.
     /// 
@@ -25,13 +26,13 @@ namespace Contur
     /// 
     /// note: internal access level for debugging only
     /// </summary>
-    public class XContur: IContur
+    public class YContur: IContur
     {
         const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;
         int _step;
 
-        int[,] dots;            // scout net : 0 - empty, 1,2,3... - contur chromes
+        int[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
         int dotСhrome;        // "цвет" закрашенных точек
         List<CPoint> cpoints; // общая коллекция цветных точек 
 
@@ -48,10 +49,9 @@ namespace Contur
             }
         }
 
-
         public int diagnostic_lostPoints;
 
-        public XContur(Bitmap img, int step)
+        public YContur(Bitmap img, int step)
         {
             _img = img;
             _step = step;
@@ -130,82 +130,59 @@ namespace Contur
             dots = new int[_img.Width / _step + 1, _img.Height / _step + 1];
             dotСhrome = 0;
 
-            for (int xo = 0; xo < dots.GetLength(0); xo++)
-                for (int yo = 0; yo < dots.GetLength(1); yo++)
-                    if (dots[xo, yo] == 0)
-                        WorkAround(xo, yo);
+            for (int xo = 1; xo < dots.GetLength(0); xo++)
+            {
+                for (int yo = 1; yo < dots.GetLength(1); yo++)
+                {
+                    int y = PathToUp(xo, yo);
+                    int x = PathToLeft(xo, yo);
+                    if (y == -1 && x == -1)
+                    {
+                        // красим в верхний цвет
+                        dots[xo, yo] = dots[xo, yo - 1];
+                        // перекашиваем левое в верхнее
+                        RepaintDots(dots[xo - 1, yo], dots[xo, yo - 1]);
+                    }
+                    else if (y == -1 && x != -1)
+                    {
+                        // красим в верхний цвет
+                        dots[xo, yo] = dots[xo, yo - 1];
+                        // создаем точку слева
+                        var p = new Point(x, yo * _step);
+                        cpoints.Add(new CPoint(p, dots[xo, yo]));
+                        cpoints.Add(new CPoint(p, dots[xo - 1, yo]));
+                    }
+                    else if (x == -1 && y != -1)
+                    {
+                        // красим в левый цвет
+                        dots[xo, yo] = dots[xo - 1, yo];
+                        // создаем точку сверху
+                        var p = new Point(xo * _step, y);
+                        cpoints.Add(new CPoint(p, dots[xo, yo]));
+                        cpoints.Add(new CPoint(p, dots[xo, yo - 1]));
+                    }
+                    else  // x != -1 && y != -1
+                    {
+                        // красим в новый цвет
+                        dots[xo, yo] = ++dotСhrome;
+                        // создаем точку слева
+                        var p = new Point(x, yo * _step);
+                        cpoints.Add(new CPoint(p, dots[xo, yo]));
+                        cpoints.Add(new CPoint(p, dots[xo - 1, yo]));
+                        // создаем точку сверху
+                        p = new Point(xo * _step, y);
+                        cpoints.Add(new CPoint(p, dots[xo, yo]));
+                        cpoints.Add(new CPoint(p, dots[xo, yo - 1]));
+                    }
+                }
+            }
         }
 
-        private void WorkAround(int xo, int yo)
-        {
-            var locals = new List<CPoint>();
-
-            // left neighbor is painted 
-            if (xo > 0 && dots[xo - 1, yo] != 0)
-            {
-                int x = PathToLeft(xo, yo);
-                if (x == -1)
-                    PaintDot(xo, yo, dots[xo - 1, yo]);
-                else
-                    locals.Add(new CPoint(x, yo * _step, dots[xo - 1, yo]));
-            }
-
-            // right neighbor is painted 
-            if (xo < dots.GetLength(0) - 1 && dots[xo + 1, yo] != 0)
-            {
-                int x = PathToRight(xo, yo);
-                if ( x == -1)
-                    PaintDot(xo, yo, dots[xo + 1, yo]);
-                else
-                    locals.Add(new CPoint(x, yo * _step, dots[xo + 1, yo]));
-            }
-
-            // upper neighbor is painted 
-            if (yo > 0 && dots[xo, yo - 1] != 0)
-            {
-                int y = PathToUp(xo, yo);
-                if (y == -1)
-                    PaintDot(xo, yo, dots[xo, yo - 1]);
-                else
-                    locals.Add(new CPoint(xo * _step, y, dots[xo, yo - 1]));
-            }
-
-            // down neighbor is painted 
-            if (yo < dots.GetLength(1) - 1 && dots[xo, yo + 1] != 0)
-            {
-                int y = PathToDown(xo, yo);
-                if (y == -1)
-                    PaintDot(xo, yo, dots[xo, yo + 1]);
-                else
-                    locals.Add(new CPoint(xo * _step, y, dots[xo, yo + 1]));
-            }
-
-            // no neighbor is painted, paint a dot in the next chrome
-            if (dots[xo, yo] == 0)
-            {
-                dotСhrome++;
-                dots[xo, yo] = dotСhrome;
-            }
-
-            // add local cpoints to common collection
-            cpoints.AddRange(locals);
-            cpoints.AddRange(locals.Select(p => new CPoint(p.P, dots[xo, yo])));
-
-        }
 
         private int PathToLeft(int xo, int yo)
         {
             int x1 = xo * _step, x2 = (xo - 1) * _step, y = yo * _step;
             for (int x = x1; x > x2; x--)
-                if (IsOnBoard(x, y))
-                    return x;
-            return -1;
-        }
-
-        private int PathToRight(int xo, int yo)
-        {
-            int x1 = xo * _step, x2 = Math.Min((xo + 1) * _step, _img.Width - 1), y = yo * _step;
-            for (int x = x1; x < x2; x++)
                 if (IsOnBoard(x, y))
                     return x;
             return -1;
@@ -219,16 +196,6 @@ namespace Contur
                     return y;
             return -1;
         }
-
-        private int PathToDown(int xo, int yo)
-        {
-            int y1 = yo * _step, y2 = Math.Min((yo + 1) * _step, _img.Height - 1), x = xo * _step;
-            for (int y = y1; y < y2; y++)
-                if (IsOnBoard(x, y))
-                    return y;
-            return -1;
-        }
-
 
         private void PaintDot(int xo, int yo, int chrome)
         {

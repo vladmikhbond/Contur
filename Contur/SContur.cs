@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Contur
 {
-    public class SContur : IContur
+    public class SContur 
     {
         Bitmap _img;
         int _step;
