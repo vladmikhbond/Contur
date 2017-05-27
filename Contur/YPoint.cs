@@ -7,30 +7,28 @@ using System.Threading.Tasks;
 
 namespace Contur
 {
-    public class Dot
+    public struct Dot
     {
-        public Comp Parent;
+        public int X, Y;
 
-        public Dot(Comp comp)
+        public Dot(int x, int y)
         {
-            Parent = comp;
+            X = x; Y = y;
         }
     }
 
     public class Comp : List<Dot>
     {
-    }
+        public List<Point> Points = new List<Point>();
+        public Comp() { }
 
-    public class YPoint
-    {
-        public Dot Dot1, Dot2;
-        public Point Point;
-
-        public YPoint(Point p, Dot dot1, Dot dot2)
+        public Comp(int len0, int len1)
         {
-            Point = p;
-            Dot1 = dot1;
-            Dot2 = dot2;
+            for (int xo = 0; xo < len0; xo++)
+                Add(new Contur.Dot(xo, 0));
+            for (int yo = 0; yo < len1; yo++)
+                Add(new Contur.Dot(0, yo));
         }
     }
+
 }
