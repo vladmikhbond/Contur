@@ -7,23 +7,30 @@ using System.Threading.Tasks;
 
 namespace Contur
 {
-    public class Chromic
+    public class Dot
     {
-        public int C;
+        public Comp Parent;
+
+        public Dot(Comp comp)
+        {
+            Parent = comp;
+        }
     }
 
+    public class Comp : List<Dot>
+    {
+    }
 
     public class YPoint
     {
-        public Chromic Chromic1;
-        public Chromic Chromic2;
+        public Dot Dot1, Dot2;
         public Point Point;
 
-        public YPoint(Point p, Chromic chromic1, Chromic chromic2)
+        public YPoint(Point p, Dot dot1, Dot dot2)
         {
             Point = p;
-            Chromic1 = chromic1;
-            Chromic2 = chromic2;
+            Dot1 = dot1;
+            Dot2 = dot2;
         }
     }
 }

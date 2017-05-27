@@ -26,30 +26,22 @@ namespace Contur
     /// 
     /// note: internal access level for debugging only
     /// </summary>
-    public class YContur: IContur
+    public class YContur  // : IContur
     {
         const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;
         int _step;
 
-        Chromic[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
-        List<YPoint> cpoints; // общая коллекция цветных точек 
+        Dot[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
+        List<YPoint> ypoints; // общая коллекция цветных точек 
 
-        int dotСhrome;        // "цвет" закрашенных точек
+        //int dotСhrome;        // "цвет" закрашенных точек
  
 
-
+        // for inspectin
         public Point[] Points
         {
-            get { return cpoints.Select(cp => cp.Point).ToArray(); }
-        }
-
-        public int this[int x, int y]
-        {
-            get
-            {
-                return dots[x, y].C;
-            }
+            get { return ypoints.Select(cp => cp.Point).ToArray(); }
         }
 
         public int diagnostic_lostPoints;
@@ -60,6 +52,85 @@ namespace Contur
             _step = step;
         }
 
+        void FludFill()
+        {
+            ypoints = new List<YPoint>();
+            // init dots array
+            dots = new Dot[_img.Width / _step + 1, _img.Height / _step + 1];
+
+            Comp zero = new Comp();
+            for (int xo = 0; xo < dots.GetLength(0); xo++)
+                dots[xo, 0] = new Dot(zero);
+            for (int yo = 0; yo < dots.GetLength(1); yo++)
+                dots[0, yo] = new Dot(zero);
+
+            for (int xo = 1; xo < dots.GetLength(0); xo++)
+            {
+                for (int yo = 1; yo < dots.GetLength(1); yo++)
+                {
+                    int y = PathToUp(xo, yo);
+                    int x = PathToLeft(xo, yo);
+                    if (y == -1 && x == -1)
+                    {
+                        // красим в верхний цвет
+                        dots[xo, yo] = dots[xo, yo - 1];
+                        // перекашиваем  в верхнее
+                        dots[xo - 1, yo].C = dots[xo, yo - 1].C;
+                    }
+                    else if (y == -1 && x != -1)
+                    {
+                        // красим в верхний цвет
+                        dots[xo, yo] = dots[xo, yo - 1];
+                        // создаем точку слева
+                        var p = new Point(x, yo * _step);
+                        ypoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
+                    }
+                    else if (x == -1 && y != -1)
+                    {
+                        // красим в левый цвет
+                        dots[xo, yo] = dots[xo - 1, yo];
+                        // создаем точку сверху
+                        var p = new Point(xo * _step, y);
+                        ypoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
+                    }
+                    else  // x != -1 && y != -1
+                    {
+                        // красим в новый цвет
+                        dots[xo, yo] = new Chromic { C = ++dotСhrome };
+
+                        // создаем точку слева
+                        var p = new Point(x, yo * _step);
+                        ypoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
+                        // создаем точку сверху
+                        p = new Point(xo * _step, y);
+                        ypoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
+                    }
+                }
+            }
+        }
+
+
+        private int PathToLeft(int xo, int yo)
+        {
+            int x1 = xo * _step, x2 = (xo - 1) * _step, y = yo * _step;
+            for (int x = x1; x > x2; x--)
+                if (IsOnBoard(x, y))
+                    return x;
+            return -1;
+        }
+
+        private int PathToUp(int xo, int yo)
+        {
+            int y1 = yo * _step, y2 = (yo - 1) * _step, x = xo * _step;
+            for (int y = y1; y > y2; y--)
+                if (IsOnBoard(x, y))
+                    return y;
+            return -1;
+        }
+
+
+
+
         public List<Point[]> MakeAllConturs()
         {
             FludFill();
@@ -67,7 +138,7 @@ namespace Contur
             var conturs = new List<Point[]>();
             for (int chrome = 0; chrome <= dotСhrome; chrome++)
             {
-                var cps = cpoints
+                var cps = ypoints
                     .Where(p => p.Chromic1.C == chrome || p.Chromic2.C == chrome)
                     .Select(p => p.Point);
                 if (cps.Count() >= MIN_POINTS_IN_CONTUR)
@@ -124,83 +195,6 @@ namespace Contur
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;
-        }
-
-
-        void FludFill()
-        {
-            cpoints = new List<YPoint>();
-            // init dots array
-            dots = new Chromic [_img.Width / _step + 1, _img.Height / _step + 1];
-            dotСhrome = 0;
-            Chromic zero = new Chromic();
-            for (int xo = 0; xo < dots.GetLength(0); xo++)
-                dots[xo, 0] = zero;
-            for (int yo = 0; yo < dots.GetLength(1); yo++)
-                dots[0, yo] = zero;
-
-            for (int xo = 1; xo < dots.GetLength(0); xo++)
-            {
-                for (int yo = 1; yo < dots.GetLength(1); yo++)
-                {
-                    int y = PathToUp(xo, yo);
-                    int x = PathToLeft(xo, yo);
-                    if (y == -1 && x == -1)
-                    {
-                        // красим в верхний цвет
-                        dots[xo, yo] = dots[xo, yo - 1];
-                        // перекашиваем  в верхнее
-                        dots[xo - 1, yo].C = dots[xo, yo - 1].C;              
-                    }
-                    else if (y == -1 && x != -1)
-                    {
-                        // красим в верхний цвет
-                        dots[xo, yo] = dots[xo, yo - 1];
-                        // создаем точку слева
-                        var p = new Point(x, yo * _step);
-                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
-                    }
-                    else if (x == -1 && y != -1)
-                    {
-                        // красим в левый цвет
-                        dots[xo, yo] = dots[xo - 1, yo];
-                        // создаем точку сверху
-                        var p = new Point(xo * _step, y);
-                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
-                    }
-                    else  // x != -1 && y != -1
-                    {
-                        // красим в новый цвет
-                        dots[xo, yo] = new Chromic { C = ++dotСhrome };
-
-                        // создаем точку слева
-                        var p = new Point(x, yo * _step);
-                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo - 1, yo]));
-                        // создаем точку сверху
-                        p = new Point(xo * _step, y);
-                        cpoints.Add(new YPoint(p, dots[xo, yo], dots[xo, yo - 1]));
-                    }
-                }
-            }
-        }
-
-
-        private int PathToLeft(int xo, int yo)
-        {
-            int x1 = xo * _step, x2 = (xo - 1) * _step, y = yo * _step;
-            for (int x = x1; x > x2; x--)
-                if (IsOnBoard(x, y))
-                    return x;
-            return -1;
-        }
-
-        private int PathToUp(int xo, int yo)
-        {
-            int y1 = yo * _step, y2 = (yo - 1) * _step, x = xo * _step;
-            for (int y = y1; y > y2; y--)
-                if (IsOnBoard(x, y))
-                    return y;
-            return -1;
         }
 
 

@@ -10,3 +10,18 @@
 
    !!! в массиве dots хранить не цвета, а ссылки на цветные объекты Chromus
    !! то же и в разделительных точках 
+
+class YPount
+   Dot Dot1, Dot2;
+   Point Point; 
+   
+class Dot
+   Comp Comp;
+
+
+class Comp: List<Dot>
+
+class YContur: IContur
+    List<YPoint> ypoints; 
+	Dot[,] dots
+    List<Comp> comps;
