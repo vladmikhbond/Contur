@@ -95,6 +95,14 @@ namespace Contur
 
             // init pots array
             pots = new Point[WO, HO];
+            int[,] dxy = { { 0, 0 },
+                { 0, 1 }, { 1, 0 },
+                { 0, 2 }, { 1, 1 }, { 2, 0 },
+                { 0, 3}, { 1, 2 }, { 2, 1 }, { 3, 0 },
+                { 0, 4}, { 1, 3 }, { 2, 2 }, { 3, 1 }, { 4, 0 },
+                { 0, 5}, { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 0 },
+                { 0, 6}, { 1, 5 }, { 2, 4 }, { 3, 3 }, { 4, 2 }, { 5, 1 }, { 6, 0 },
+            };
             for (int xo = 0; xo < WO; xo++)
             {
                 for (int yo = 0; yo < HO; yo++)
@@ -102,13 +110,14 @@ namespace Contur
                     int x = xo * _step;
                     int y = yo * _step;
                     int dx = 0, dy = 0;
-                    while (IsBlack(x - dx, y - dy))
+                    for(int a = 0; a < dxy.Length / 2; a++)
                     {
-                        if (dx < dy)
-                            dx++;
-                        else
-                            dy++;
+                        dx = dxy[a, 0];
+                        dy = dxy[a, 1];
+                        if (!IsBlack(x - dx, y - dy))
+                            break;
                     }
+                    
                     pots[xo, yo] = new Point(x - dx, y - dy);
                 }
             }
@@ -228,7 +237,7 @@ namespace Contur
         /// 
         List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
         {
-            int MAX_DIST = _step * _step * 8;
+            int MAX_DIST = _step * _step * 4;
             var input = new List<Point>(points);
             var output = new List<Point>();
 
