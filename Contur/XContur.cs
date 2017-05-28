@@ -25,7 +25,7 @@ namespace Contur
     /// 
     /// note: internal access level for debugging only
     /// </summary>
-    public class XContur: IContur
+    public class XContur
     {
         const int MIN_POINTS_IN_CONTUR = 8;
         Bitmap _img;

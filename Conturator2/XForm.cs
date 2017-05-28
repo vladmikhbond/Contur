@@ -59,7 +59,7 @@ namespace Conturator2
             if (pBox.Image == null)
                 pBox.Image = currentImage;
             int step = Convert.ToInt32(stepBox.Text);
-            IContur xc = new YContur((Bitmap)pBox.Image, step);
+            YContur xc = new YContur((Bitmap)pBox.Image, step, pBox.CreateGraphics());
             pBox.Refresh();
             // t
             Stopwatch stopWatch = new Stopwatch();
@@ -73,28 +73,9 @@ namespace Conturator2
             stopWatch.Stop();
             string msec = stopWatch.ElapsedMilliseconds.ToString();
             
-            Graphics g = pBox.CreateGraphics();
-            ShowDots(g, step, (YContur)xc);
-            ShowPoints(g, xc);
 
             infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
             messBox.Text = string.Join("\r\n", cl.Select(c => c.Count().ToString()));      
-        }
-
-        private void ShowDots(Graphics g, int step, YContur xc)
-        {
-            if (step >= 10)
-            {
-                for (int xo = 0; xo * step < currentImage.Width; xo++)
-                    for (int yo = 0; yo * step < currentImage.Height; yo++)
-                        g.DrawString(xc[xo, yo].ToString(), new Font("Courier", 6), Brushes.Black, xo * step, yo * step);
-            }
-        }
-
-        private void ShowPoints(Graphics g, IContur xc)
-        {
-            foreach (var p in xc.Points)
-                g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
         }
 
 
@@ -162,6 +143,11 @@ namespace Conturator2
                 pBox.Image = currentImage;
             else
                 pBox.Image = null;
+        }
+
+        private void stepBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

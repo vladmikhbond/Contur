@@ -65,7 +65,7 @@
             this.noImageButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1132, 45);
+            this.toolStrip1.Size = new System.Drawing.Size(1187, 45);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -115,8 +115,9 @@
             // 
             this.stepBox.Name = "stepBox";
             this.stepBox.Size = new System.Drawing.Size(32, 45);
-            this.stepBox.Text = "25";
+            this.stepBox.Text = "20";
             this.stepBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.stepBox.Click += new System.EventHandler(this.stepBox_Click);
             // 
             // toolStripSeparator2
             // 
@@ -169,11 +170,12 @@
             // 
             this.pBox.BackColor = System.Drawing.SystemColors.Window;
             this.pBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pBox.Image = ((System.Drawing.Image)(resources.GetObject("pBox.Image")));
             this.pBox.InitialImage = null;
             this.pBox.Location = new System.Drawing.Point(15, 58);
             this.pBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pBox.Name = "pBox";
-            this.pBox.Size = new System.Drawing.Size(871, 522);
+            this.pBox.Size = new System.Drawing.Size(979, 622);
             this.pBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pBox.TabIndex = 3;
             this.pBox.TabStop = false;
@@ -185,20 +187,20 @@
             // 
             this.messBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.messBox.Location = new System.Drawing.Point(901, 58);
+            this.messBox.Location = new System.Drawing.Point(956, 58);
             this.messBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.messBox.Multiline = true;
             this.messBox.Name = "messBox";
             this.messBox.ReadOnly = true;
             this.messBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messBox.Size = new System.Drawing.Size(215, 522);
+            this.messBox.Size = new System.Drawing.Size(215, 558);
             this.messBox.TabIndex = 5;
             // 
             // XForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1132, 598);
+            this.ClientSize = new System.Drawing.Size(1187, 634);
             this.Controls.Add(this.messBox);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
