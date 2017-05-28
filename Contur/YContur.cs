@@ -133,20 +133,34 @@ namespace Contur
 
         private int PathToLeft(int xo, int yo)
         {
-            int x1 = xo * _step, x2 = (xo - 1) * _step, y = yo * _step;
+            int x1 = xo * _step, x2 = (xo - 1) * _step, y1 = yo * _step;
             for (int x = x1; x > x2; x--)
-                if (IsOnBoard(x, y))
+                if (IsBlack(x, y1) != IsBlack(x1, y1))
+                //if (IsBlack(x, y))
                     return x;
             return -1;
         }
 
+
         private int PathToUp(int xo, int yo)
         {
-            int y1 = yo * _step, y2 = (yo - 1) * _step, x = xo * _step;
+            int y1 = yo * _step, y2 = (yo - 1) * _step, x1 = xo * _step;
             for (int y = y1; y > y2; y--)
-                if (IsOnBoard(x, y))
+                if (IsBlack(x1, y) != IsBlack(x1, y1))
+                    //if (IsBlack(x, y))
                     return y;
             return -1;
+        }
+
+
+        // Test if the point is on a board
+        //
+        private bool IsBlack(int x, int y)
+        {
+            if (x >= _img.Width || y >= _img.Height)
+                return false;
+            Color c = _img.GetPixel(x, y);
+            return c.R < 255 && c.G < 255 && c.B < 255;
         }
 
 
@@ -160,16 +174,16 @@ namespace Contur
                 {
                     if (dots[xo, yo].Count == 1)
                     {
-                        if (dots[xo - 1, yo].Count > 1)
-                        {
-                            dots[xo - 1, yo].Add(new Dot(xo, yo));
-                            dots[xo, yo] = dots[xo - 1, yo];
-                        }
-                        if (dots[xo, yo - 1].Count > 1)
-                        {
-                            dots[xo, yo - 1].Add(new Dot(xo, yo));
-                            dots[xo, yo] = dots[xo, yo - 1];
-                        }
+                        //if (dots[xo - 1, yo].Count > 1)
+                        //{
+                        //    dots[xo - 1, yo].Add(new Dot(xo, yo));
+                        //    dots[xo, yo] = dots[xo - 1, yo];
+                        //}
+                        //if (dots[xo, yo - 1].Count > 1)
+                        //{
+                        //    dots[xo, yo - 1].Add(new Dot(xo, yo));
+                        //    dots[xo, yo] = dots[xo, yo - 1];
+                        //}
                         if (xo + 1 < dots.GetLength(0))
                         {
                             ////
@@ -256,15 +270,6 @@ namespace Contur
         }
 
 
-        // Test if the point is on a board
-        //
-        private bool IsOnBoard(int x, int y)
-        {
-            if (x >= _img.Width || y >= _img.Height)
-                return false;
-            Color c = _img.GetPixel(x, y);
-            return c.R < 255 && c.G < 255 && c.B < 255;
-        }
-
+ 
     }
 }
