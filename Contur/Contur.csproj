@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConturList.cs" />
-    <Compile Include="YPoint.cs" />
+    <Compile Include="ConComp.cs" />
     <Compile Include="CPoint.cs" />
     <Compile Include="SContur.cs" />
     <Compile Include="YContur.cs" />

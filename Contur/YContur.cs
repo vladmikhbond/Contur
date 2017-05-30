@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 
 // Алгоритм закраски
@@ -28,47 +29,64 @@ namespace Contur
     /// </summary>
     public class YContur 
     {
-        
+        // input data
         Bitmap _img;
         int _step;
+
+        ConComp[,] dots;     // scout net : 0 - empty, 1,2,3... - contur chromes
+        Point[,] tots;
+        int WO, HO;          // width and height jf the dots and tots
+        List<Point> points; // общая коллекция цветных точек 
+
+        // for inspection only
         Graphics _g;
+        TextBox _info;
 
-        Comp[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
-        List<System.Drawing.Point> ypoints; // общая коллекция цветных точек 
-        System.Drawing.Point[,] pots;
- 
-
-        public YContur(Bitmap img, int step, Graphics g)
+        public YContur(Bitmap img, int step, Graphics g, TextBox info)
         {
             _img = img;
             _step = step;
             _g = g;
+            _info = info;
+            WO = _img.Width / _step + 1;
+            HO = _img.Height / _step + 1;
         }
 
-        public List<System.Drawing.Point[]> MakeAllConturs()
+        public List<Point[]> Process()
         {
             FludFill();
-            ShowDots();
-            var conturs = new List<System.Drawing.Point[]>();
-           // return conturs;
+            __DrawDots();
+            __ShowConComps();
 
-            foreach (var p in ypoints)
+            return MakeAllConturs();
+        }
+
+        List<Point[]> MakeAllConturs()
+        {
+            var conturs = new List<Point[]>();
+
+            foreach (var p in points)
             {
                 int ox = p.X / _step;
                 int oy = p.Y / _step;
+
+                // точка в первый смежный контур
                 dots[ox, oy].Points.Add(p);
-                // если точка лежит на вертикали
+
+                // точка во второй смежный контур
                 if (ox * _step == p.X && oy + 1 < dots.GetLength(1))
                 {
+                    // точка лежит на вертикали
                     dots[ox, oy + 1].Points.Add(p);
                 }
-                // если точка лежит на горизонтали
                 if (oy * _step == p.Y && ox + 1 < dots.GetLength(0))
                 {
+                    // точка лежит на горизонтали
                     dots[ox + 1, oy].Points.Add(p);
                 }
             }
-            var comps = dots.OfType<Comp>().Distinct().Where(c => c.Count > 1).ToArray();
+
+            var comps = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
             foreach (var comp in comps)
             {
                 var ps = MakeConturFromPointSet(comp.Points);
@@ -81,46 +99,17 @@ namespace Contur
 
         void FludFill()
         {
-            ypoints = new List<System.Drawing.Point>();
+            points = new List<Point>();
 
             // init dots array
-            int WO = _img.Width / _step + 1;
-            int HO = _img.Height / _step + 1;
-            dots = new Comp[WO, HO];
-            Comp zero = new Comp(WO, HO);
+            dots = new ConComp[WO, HO];
+            ConComp zero = new ConComp(WO, HO);
             for (int xo = 0; xo < WO; xo++)
                 dots[xo, 0] = zero;
             for (int yo = 0; yo < HO; yo++)
                 dots[0, yo] = zero;
 
-            // init pots array
-            pots = new System.Drawing.Point[WO, HO];
-            int[,] dxy = { { 0, 0 },
-                { 0, 1 }, { 1, 0 },
-                { 0, 2 }, { 1, 1 }, { 2, 0 },
-                { 0, 3}, { 1, 2 }, { 2, 1 }, { 3, 0 },
-                { 0, 4}, { 1, 3 }, { 2, 2 }, { 3, 1 }, { 4, 0 },
-                { 0, 5}, { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 0 },
-                { 0, 6}, { 1, 5 }, { 2, 4 }, { 3, 3 }, { 4, 2 }, { 5, 1 }, { 6, 0 },
-            };
-            for (int xo = 0; xo < WO; xo++)
-            {
-                for (int yo = 0; yo < HO; yo++)
-                {
-                    int x = xo * _step;
-                    int y = yo * _step;
-                    int dx = 0, dy = 0;
-                    for(int a = 0; a < dxy.Length / 2; a++)
-                    {
-                        dx = dxy[a, 0];
-                        dy = dxy[a, 1];
-                        if (!IsBlack(x - dx, y - dy))
-                            break;
-                    }
-
-                    pots[xo, yo] = new System.Drawing.Point(x - dx, y - dy);
-                }
-            }
+            InitTots(WO, HO);
 
 
             for (int yo = 1; yo < dots.GetLength(1); yo++)
@@ -153,7 +142,7 @@ namespace Contur
                         dots[xo, yo] = dots[xo, yo - 1];
                         dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку слева
-                        ypoints.Add(new System.Drawing.Point(x, yo * _step));
+                        points.Add(new Point(x, yo * _step));
                     }
                     else if (x == -1 && y != -1)
                     {
@@ -161,32 +150,103 @@ namespace Contur
                         dots[xo, yo] = dots[xo - 1, yo];
                         dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку сверху
-                        var p = new System.Drawing.Point(xo * _step, y);
-                        ypoints.Add(p);
+                        var p = new Point(xo * _step, y);
+                        points.Add(p);
                     }
                     else  // x != -1 && y != -1
                     {
                         // красим в новый цвет
-                        dots[xo, yo] = new Comp();
+                        dots[xo, yo] = new ConComp();
                         dots[xo, yo].Add(new Point(xo, yo));
 
                         // создаем точку слева
-                        var p = new System.Drawing.Point(x, yo * _step);
-                        ypoints.Add(p);
+                        var p = new Point(x, yo * _step);
+                        points.Add(p);
                         // создаем точку сверху
-                        p = new System.Drawing.Point(xo * _step, y);
-                        ypoints.Add(p);
+                        p = new Point(xo * _step, y);
+                        points.Add(p);
 
                     }
                 }
             }
         }
 
+        private void InitTots0(int wo, int ho)
+        {
+            tots = new Point[wo, ho];
+            for (int xo = 0; xo < wo; xo++)
+            {
+                int x = xo * _step;
+                for (int yo = 0; yo < ho; yo++)
+                {
+                    int y = yo * _step;
+                    tots[xo, yo] = new Point(x, y);
+                }
+            }
+        }
+
+        private void InitTots(int wo, int ho)
+        {
+            tots = new Point[wo, ho];
+            for (int xo = 0; xo < wo; xo++)
+            {
+                int x = xo * _step;
+                for (int yo = 0; yo < ho; yo++)
+                {
+                    int y = yo * _step;
+                    tots[xo, yo] = new Point(x, y);
+                    for (int d = 0; d < _step; d++)
+                    {
+                        if (!IsBlack(x - d, y))
+                        {
+                            tots[xo, yo] = new Point(x - d, y);
+                            break;
+                        }
+                        if (!IsBlack(x, y - d))
+                        {
+                            tots[xo, yo] = new Point(x, y - d);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void InitTots1(int wo, int ho)
+        {
+            tots = new Point[wo, ho];
+            int[,] dxy = { { 0, 0 },
+                { 0, 1 }, { 1, 0 },
+                { 0, 2 }, { 1, 1 }, { 2, 0 },
+                { 0, 3}, { 1, 2 }, { 2, 1 }, { 3, 0 },
+                { 0, 4}, { 1, 3 }, { 2, 2 }, { 3, 1 }, { 4, 0 },
+                { 0, 5}, { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 0 },
+                { 0, 6}, { 1, 5 }, { 2, 4 }, { 3, 3 }, { 4, 2 }, { 5, 1 }, { 6, 0 },
+            };
+            for (int xo = 0; xo < wo; xo++)
+            {
+                for (int yo = 0; yo < ho; yo++)
+                {
+                    int x = xo * _step;
+                    int y = yo * _step;
+                    int dx = 0, dy = 0;
+                    for (int a = 0; a < dxy.Length / 2; a++)
+                    {
+                        dx = dxy[a, 0];
+                        dy = dxy[a, 1];
+                        if (!IsBlack(x - dx, y - dy))
+                            break;
+                    }
+                    tots[xo, yo] = new Point(x - dx, y - dy);
+                }
+            }
+
+        }
 
         private int PathToLeft(int xo, int yo)
         {
-            System.Drawing.Point p1 = pots[xo, yo];
-            System.Drawing.Point p2 = pots[xo - 1, yo];
+            Point p1 = tots[xo, yo];
+            Point p2 = tots[xo - 1, yo];
             int y1 = Math.Min(p1.Y, p2.Y);
             int y2 = Math.Max(p1.Y, p2.Y);
 
@@ -202,8 +262,8 @@ namespace Contur
 
         private int PathToUp(int xo, int yo)
         {
-            System.Drawing.Point p1 = pots[xo, yo];
-            System.Drawing.Point p2 = pots[xo, yo - 1];
+            Point p1 = tots[xo, yo];
+            Point p2 = tots[xo, yo - 1];
             int x1 = Math.Min(p1.X, p2.X);
             int x2 = Math.Max(p1.X, p2.X);
 
@@ -217,7 +277,7 @@ namespace Contur
         }
 
 
-        // Test if a point is on a board
+        // Test if a point is on board
         //
         private bool IsBlack(int x, int y)
         {
@@ -235,11 +295,11 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<System.Drawing.Point> MakeConturFromPointSet(IEnumerable<System.Drawing.Point> points)
+        List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
         {
             int MAX_DIST = _step * _step * 4;
-            var input = new List<System.Drawing.Point>(points);
-            var output = new List<System.Drawing.Point>();
+            var input = new List<Point>(points);
+            var output = new List<Point>();
 
             var last = input[0];
             output.Add(last);
@@ -266,7 +326,7 @@ namespace Contur
 
         }
 
-        private static double Dist(System.Drawing.Point p1, System.Drawing.Point p2)
+        private static double Dist(Point p1, Point p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;
@@ -274,9 +334,9 @@ namespace Contur
 
         #region Inspection
 
-        private void ShowDots()
+        private void __DrawDots()
         {
-            var comps = dots.OfType<Comp>().Distinct()
+            var comps = dots.OfType<ConComp>().Distinct()
                 //.Where(c => c.Count > 1)
                 .ToArray();
 
@@ -289,7 +349,7 @@ namespace Contur
                     for (int yo = 0; yo * _step < _img.Height; yo++)
                     {
                         //_g.FillRectangle(Brushes.Red, xo * _step, yo * _step, 1, 1);
-                        var p = pots[xo, yo];
+                        var p = tots[xo, yo];
                         _g.FillRectangle(Brushes.Red, p.X, p.Y, 1, 1);
                         int id = comps.TakeWhile(c => c != dots[xo, yo]).Count(); 
                         Brush brush = brushes[id % brushes.Length];
@@ -300,10 +360,17 @@ namespace Contur
             }
         }
 
-        private void ShowPoints()
+        private void __DrawPoints()
         {
-            foreach (var p in ypoints)
+            foreach (var p in points)
                 _g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
+        }
+
+        private void __ShowConComps()
+        {
+            var comps = dots.OfType<ConComp>().Distinct().ToArray();
+            var counts = comps.Select(c => c.Count().ToString());
+            _info.Text = $"All={counts.Count()}\r\n" + string.Join("\r\n", counts);      
         }
 
         #endregion

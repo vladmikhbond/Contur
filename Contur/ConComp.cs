@@ -8,12 +8,16 @@ using System.Threading.Tasks;
 namespace Contur
 {
 
-    public class Comp : List<Point>
+    /// <summary>
+    /// Компонента связности - коллекция реперных точек 
+    /// </summary>
+    public class ConComp : List<Point>
     {
         public List<System.Drawing.Point> Points = new List<System.Drawing.Point>();
-        public Comp() { }
 
-        public Comp(int len0, int len1)
+        public ConComp() { }
+
+        public ConComp(int len0, int len1)
         {
             for (int xo = 0; xo < len0; xo++)
                 Add(new Point(xo, 0));

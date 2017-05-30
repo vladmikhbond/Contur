@@ -60,14 +60,14 @@ namespace Conturator2
             if (pBox.Image == null)
                 pBox.Image = currentImage;
             int step = Convert.ToInt32(stepBox.Text);
-            YContur xc = new YContur((Bitmap)pBox.Image, step, pBox.CreateGraphics());
+            YContur xc = new YContur((Bitmap)pBox.Image, step, pBox.CreateGraphics(), textBox1);
             pBox.Refresh();
             // t
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
             // Main part of work
-            List<System.Drawing.Point[]> cl = xc.MakeAllConturs();
+            List<System.Drawing.Point[]> cl = xc.Process();
             conturList = new ConturList(cl);
             
             // t

@@ -44,6 +44,7 @@
             this.pBox = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.messBox = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pBox)).BeginInit();
             this.SuspendLayout();
@@ -193,14 +194,28 @@
             this.messBox.Name = "messBox";
             this.messBox.ReadOnly = true;
             this.messBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messBox.Size = new System.Drawing.Size(215, 558);
+            this.messBox.Size = new System.Drawing.Size(103, 558);
             this.messBox.TabIndex = 5;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Location = new System.Drawing.Point(1065, 58);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox1.Size = new System.Drawing.Size(122, 558);
+            this.textBox1.TabIndex = 6;
             // 
             // XForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1187, 634);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.messBox);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pBox);
@@ -232,5 +247,6 @@
         private System.Windows.Forms.ToolStripButton saveButton;
         private System.Windows.Forms.ToolStripButton loadFileButton;
         private System.Windows.Forms.ToolStripButton noImageButton;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
