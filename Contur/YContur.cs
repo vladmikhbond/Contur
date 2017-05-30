@@ -34,8 +34,8 @@ namespace Contur
         Graphics _g;
 
         Comp[,] dots;   // scout net : 0 - empty, 1,2,3... - contur chromes
-        List<Point> ypoints; // общая коллекция цветных точек 
-        Point[,] pots;
+        List<System.Drawing.Point> ypoints; // общая коллекция цветных точек 
+        System.Drawing.Point[,] pots;
  
 
         public YContur(Bitmap img, int step, Graphics g)
@@ -45,11 +45,11 @@ namespace Contur
             _g = g;
         }
 
-        public List<Point[]> MakeAllConturs()
+        public List<System.Drawing.Point[]> MakeAllConturs()
         {
             FludFill();
             ShowDots();
-            var conturs = new List<Point[]>();
+            var conturs = new List<System.Drawing.Point[]>();
            // return conturs;
 
             foreach (var p in ypoints)
@@ -81,7 +81,7 @@ namespace Contur
 
         void FludFill()
         {
-            ypoints = new List<Point>();
+            ypoints = new List<System.Drawing.Point>();
 
             // init dots array
             int WO = _img.Width / _step + 1;
@@ -94,7 +94,7 @@ namespace Contur
                 dots[0, yo] = zero;
 
             // init pots array
-            pots = new Point[WO, HO];
+            pots = new System.Drawing.Point[WO, HO];
             int[,] dxy = { { 0, 0 },
                 { 0, 1 }, { 1, 0 },
                 { 0, 2 }, { 1, 1 }, { 2, 0 },
@@ -117,8 +117,8 @@ namespace Contur
                         if (!IsBlack(x - dx, y - dy))
                             break;
                     }
-                    
-                    pots[xo, yo] = new Point(x - dx, y - dy);
+
+                    pots[xo, yo] = new System.Drawing.Point(x - dx, y - dy);
                 }
             }
 
@@ -133,7 +133,7 @@ namespace Contur
                     {
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
-                        dots[xo, yo].Add(new Dot(xo, yo));
+                        dots[xo, yo].Add(new Point(xo, yo));
                         
                         var up = dots[xo, yo - 1];
                         var left = dots[xo - 1, yo];
@@ -151,30 +151,30 @@ namespace Contur
                     {
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
-                        dots[xo, yo].Add(new Dot(xo, yo));
+                        dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку слева
-                        ypoints.Add(new Point(x, yo * _step));
+                        ypoints.Add(new System.Drawing.Point(x, yo * _step));
                     }
                     else if (x == -1 && y != -1)
                     {
                         // красим в левый цвет
                         dots[xo, yo] = dots[xo - 1, yo];
-                        dots[xo, yo].Add(new Dot(xo, yo));
+                        dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку сверху
-                        var p = new Point(xo * _step, y);
+                        var p = new System.Drawing.Point(xo * _step, y);
                         ypoints.Add(p);
                     }
                     else  // x != -1 && y != -1
                     {
                         // красим в новый цвет
                         dots[xo, yo] = new Comp();
-                        dots[xo, yo].Add(new Dot(xo, yo));
+                        dots[xo, yo].Add(new Point(xo, yo));
 
                         // создаем точку слева
-                        var p = new Point(x, yo * _step);
+                        var p = new System.Drawing.Point(x, yo * _step);
                         ypoints.Add(p);
                         // создаем точку сверху
-                        p = new Point(xo * _step, y);
+                        p = new System.Drawing.Point(xo * _step, y);
                         ypoints.Add(p);
 
                     }
@@ -185,8 +185,8 @@ namespace Contur
 
         private int PathToLeft(int xo, int yo)
         {
-            Point p1 = pots[xo, yo];
-            Point p2 = pots[xo - 1, yo];
+            System.Drawing.Point p1 = pots[xo, yo];
+            System.Drawing.Point p2 = pots[xo - 1, yo];
             int y1 = Math.Min(p1.Y, p2.Y);
             int y2 = Math.Max(p1.Y, p2.Y);
 
@@ -202,8 +202,8 @@ namespace Contur
 
         private int PathToUp(int xo, int yo)
         {
-            Point p1 = pots[xo, yo];
-            Point p2 = pots[xo, yo - 1];
+            System.Drawing.Point p1 = pots[xo, yo];
+            System.Drawing.Point p2 = pots[xo, yo - 1];
             int x1 = Math.Min(p1.X, p2.X);
             int x2 = Math.Max(p1.X, p2.X);
 
@@ -235,11 +235,11 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
+        List<System.Drawing.Point> MakeConturFromPointSet(IEnumerable<System.Drawing.Point> points)
         {
             int MAX_DIST = _step * _step * 4;
-            var input = new List<Point>(points);
-            var output = new List<Point>();
+            var input = new List<System.Drawing.Point>(points);
+            var output = new List<System.Drawing.Point>();
 
             var last = input[0];
             output.Add(last);
@@ -266,7 +266,7 @@ namespace Contur
 
         }
 
-        private static double Dist(Point p1, Point p2)
+        private static double Dist(System.Drawing.Point p1, System.Drawing.Point p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;

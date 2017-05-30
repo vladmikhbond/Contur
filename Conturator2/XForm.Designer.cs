@@ -162,8 +162,8 @@
             this.noImageButton.Image = ((System.Drawing.Image)(resources.GetObject("noImageButton.Image")));
             this.noImageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.noImageButton.Name = "noImageButton";
-            this.noImageButton.Size = new System.Drawing.Size(63, 42);
-            this.noImageButton.Text = "No Img";
+            this.noImageButton.Size = new System.Drawing.Size(75, 42);
+            this.noImageButton.Text = "Hide Img";
             this.noImageButton.Click += new System.EventHandler(this.noImageButton_Click);
             // 
             // pBox

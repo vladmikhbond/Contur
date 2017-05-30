@@ -10,15 +10,15 @@ namespace Contur
     public class CPoint
     {
         public int Chrome;
-        public Point P;
+        public System.Drawing.Point P;
 
         public CPoint(int x, int y, int c)
         {
             Chrome = c;
-            P = new Point(x, y);
+            P = new System.Drawing.Point(x, y);
         }
 
-        public CPoint(Point p, int c)
+        public CPoint(System.Drawing.Point p, int c)
         {
             Chrome = c;
             P = p;

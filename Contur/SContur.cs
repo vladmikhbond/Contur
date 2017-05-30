@@ -11,7 +11,7 @@ namespace Contur
     {
         Bitmap _img;
         int _step;
-        List<Point> _points;
+        List<System.Drawing.Point> _points;
 
         public SContur(Bitmap img, int step)
         {
@@ -19,28 +19,28 @@ namespace Contur
             _step = step;
         }
 
-        public Point[] Points
+        public System.Drawing.Point[] Points
         {
             get { return _points.ToArray(); }
         }
 
-        public List<Point[]> MakeAllConturs()
+        public List<System.Drawing.Point[]> MakeAllConturs()
         {        
             CreatePoints();
-            var conturs = new List<Point[]>();
+            var conturs = new List<System.Drawing.Point[]>();
 
             int MAX_DIST = _step * _step * 2;
-            var input = new List<Point>(_points);
-            Point[] contur;
+            var input = new List<System.Drawing.Point>(_points);
+            System.Drawing.Point[] contur;
             while ((contur = GetOneContur(input)) != null && input.Count > 0)
                 conturs.Add(contur);
             return conturs;
         }
 
-        private Point[] GetOneContur(List<Point> input)
+        private System.Drawing.Point[] GetOneContur(List<System.Drawing.Point> input)
         {
             int MAX_DIST = _step * _step * 2;
-            var output = new List<Point>();
+            var output = new List<System.Drawing.Point>();
 
             var last = input[0];
             output.Add(last);
@@ -68,13 +68,13 @@ namespace Contur
 
         private void CreatePoints()
         {
-            _points = new List<Point>();
+            _points = new List<System.Drawing.Point>();
 
             for (int y = 0; y < _img.Height; y += _step)
                 for (int x = 0; x < _img.Width; x++)
                     if (IsOnBoard(x, y))
                     {
-                        _points.Add(new Point(x, y));
+                        _points.Add(new System.Drawing.Point(x, y));
                         x += _step;
                     }
 
@@ -82,12 +82,12 @@ namespace Contur
                 for (int y = 0; y < _img.Height; y++)
                     if (IsOnBoard(x, y))
                     {
-                        _points.Add(new Point(x, y));
+                        _points.Add(new System.Drawing.Point(x, y));
                         y += _step;
                     }
         }
 
-        private static double Dist(Point p1, Point p2)
+        private static double Dist(System.Drawing.Point p1, System.Drawing.Point p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;

@@ -22,6 +22,7 @@ namespace Conturator2
         public XForm()
         {
             InitializeComponent();
+            currentImage = pBox.Image;
         }
 
 
@@ -66,7 +67,7 @@ namespace Conturator2
             stopWatch.Start();
 
             // Main part of work
-            List<Point[]> cl = xc.MakeAllConturs();
+            List<System.Drawing.Point[]> cl = xc.MakeAllConturs();
             conturList = new ConturList(cl);
             
             // t

@@ -35,7 +35,7 @@ namespace Contur
         int dotСhrome;        // "цвет" закрашенных точек
         List<CPoint> cpoints; // общая коллекция цветных точек 
 
-        public Point[] Points
+        public System.Drawing.Point[] Points
         {
             get { return cpoints.Select(cp => cp.P).ToArray(); }
         }
@@ -57,10 +57,10 @@ namespace Contur
             _step = step;
         }
 
-        public List<Point[]> MakeAllConturs()
+        public List<System.Drawing.Point[]> MakeAllConturs()
         {
             FludFill();
-            var conturs = new List<Point[]>();
+            var conturs = new List<System.Drawing.Point[]>();
 
             for (int chrome = 1; chrome <= dotСhrome; chrome++)
             {
@@ -84,11 +84,11 @@ namespace Contur
         /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
         /// продолжаем переносить, пока точки во входном массве не закончатся
         /// 
-        List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
+        List<System.Drawing.Point> MakeConturFromPointSet(IEnumerable<System.Drawing.Point> points)
         {
             int MAX_DIST = _step * _step * 8;
-            var input = new List<Point>(points);
-            var output = new List<Point>();
+            var input = new List<System.Drawing.Point>(points);
+            var output = new List<System.Drawing.Point>();
 
             var last = input[0];
             output.Add(last);
@@ -117,7 +117,7 @@ namespace Contur
 
         }
 
-        private static double Dist(Point p1, Point p2)
+        private static double Dist(System.Drawing.Point p1, System.Drawing.Point p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
             return dx * dx + dy * dy;

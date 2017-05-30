@@ -11,11 +11,11 @@ namespace Contur
     // export this[int], ctor(string fname),  ctor(List<Point[]> list),  SaveToFile(fname), ContursAroundPoint(Point)
     public class ConturList
     {
-        public List<Point[]> List;
+        public List<System.Drawing.Point[]> List;
 
         // Create this from file
         //
-        public ConturList(List<Point[]> list)
+        public ConturList(List<System.Drawing.Point[]> list)
         {
             List = list;
         }
@@ -23,7 +23,7 @@ namespace Contur
         public ConturList(string fname)
         {
             var lines = File.ReadAllLines(fname);
-            List = new List<Point[]>();
+            List = new List<System.Drawing.Point[]>();
             foreach (string line in lines)
             {
                 var nums = line.Split(',').Select(s => Convert.ToInt32(s)).ToArray();
@@ -44,17 +44,17 @@ namespace Contur
         }
 
 
-        public IEnumerable<Point[]> ContursAroundPoint(Point p)
+        public IEnumerable<System.Drawing.Point[]> ContursAroundPoint(System.Drawing.Point p)
         {
             return List.Where(c => IsInside(c, p)).OrderBy(c => c.Count());
         }
 
-        public int ConturIdxAroundPoint(Point p)
+        public int ConturIdxAroundPoint(System.Drawing.Point p)
         {
             return List.TakeWhile(c => !IsInside(c, p)).Count();
         }
 
-        static bool IsInside(Point[] ps, Point p)
+        static bool IsInside(System.Drawing.Point[] ps, System.Drawing.Point p)
         {
             bool result = false;
             int j = ps.Count() - 1;
