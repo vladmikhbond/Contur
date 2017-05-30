@@ -243,6 +243,57 @@ namespace Contur
 
         }
 
+
+        // Движемся слева направо и сверху вниз. Угол наклона <= 45 град.
+        // Если нет черной точки, возвращаем null
+        //
+        Point? LeftWay(int xo, int yo)
+        {
+            Point p2 = tots[xo, yo];
+            Point p1 = tots[xo - 1, yo];
+            int deltax = Math.Abs(p1.X - p2.X);
+            int deltay = Math.Abs(p1.Y - p2.Y);
+
+            int error = 0;
+            int deltaerr = deltay;
+            int y = p2.Y;
+            for (int x = p2.X; x < p1.X; x++)
+            {
+                if (IsBlack(x, y))
+                    return new Point(x, y);
+                error += deltaerr;
+                if (2 * error >= deltax)
+                    y--;
+                error = error - deltax;
+            }
+            return null;
+        }
+
+        // Движемся слева направо и сверху вниз. Угол наклона <= 45 град.
+        // Если нет черной точки, возвращаем null
+        //
+        Point? UpWay(int xo, int yo)
+        {
+            Point p2 = tots[xo, yo];
+            Point p1 = tots[xo, yo - 1];
+            int deltax = Math.Abs(p1.X - p2.X);
+            int deltay = Math.Abs(p1.Y - p2.Y);
+
+            int error = 0;
+            int deltaerr = deltax;
+            int x = p2.X;
+            for (int y = p2.Y; y < p1.Y; y++)
+            {
+                if (IsBlack(x, y))
+                    return new Point(x, y);
+                error += deltaerr;
+                if (2 * error >= deltay)
+                    x--;
+                error = error - deltay;
+            }
+            return null;
+        }
+
         private int PathToLeft(int xo, int yo)
         {
             Point p1 = tots[xo, yo];
@@ -258,7 +309,6 @@ namespace Contur
                     return p2.X;
             return -1;
         }
-
 
         private int PathToUp(int xo, int yo)
         {
@@ -276,7 +326,6 @@ namespace Contur
             return -1;
         }
 
-
         // Test if a point is on board
         //
         private bool IsBlack(int x, int y)
@@ -286,8 +335,6 @@ namespace Contur
             Color c = _img.GetPixel(x, y);
             return c.R < 255 && c.G < 255 && c.B < 255;
         }
-
-
 
         /// Собирает контур из неупорядоченного множества точек
         /// 
