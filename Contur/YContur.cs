@@ -55,6 +55,8 @@ namespace Contur
         public List<Point[]> Process()
         {
             FludFill();
+            //return new List<Point[]>();
+
             __DrawDots();
             __ShowConComps();
 
@@ -116,8 +118,10 @@ namespace Contur
             {
                 for (int xo = 1; xo < dots.GetLength(0); xo++)
                 {
-                    Point? pUp = PathToUp(xo, yo);
-                    Point? pLeft = PathToLeft(xo, yo);
+                    Point? pLeft = BrezenhamPath(tots[xo, yo], tots[xo - 1, yo]);
+                    Point? pUp = BrezenhamPath(tots[xo, yo], tots[xo, yo - 1]);
+                    //Point? pUp = PathToUp(xo, yo);
+                    //Point? pLeft = PathToLeft(xo, yo);
                     if (pUp == null && pLeft == null)
                     {
                         // красим в верхний цвет
@@ -211,7 +215,7 @@ namespace Contur
             }
         }
 
-        // Инициализация реперных точек (вариант с диагональным растром)
+        // DEPRECATED Инициализация реперных точек (вариант с диагональным растром)
         //
         private void InitTots1(int wo, int ho)
         {
@@ -245,56 +249,47 @@ namespace Contur
         }
 
 
-        // Движемся слева направо и сверху вниз. Угол наклона <= 45 град.
-        // Если нет черной точки, возвращаем null
-        //
-        Point? LeftWay(int xo, int yo)
+        Point? BrezenhamPath(Point p0, Point p1)
         {
-            Point p2 = tots[xo, yo];
-            Point p1 = tots[xo - 1, yo];
-            int deltax = Math.Abs(p1.X - p2.X);
-            int deltay = Math.Abs(p1.Y - p2.Y);
+            int deltax = Math.Abs(p1.X - p0.X);
+            int deltay = Math.Abs(p1.Y - p0.Y);
+
+            bool b45 = deltax < deltay;
+            if (b45)
+            {
+                int t = p0.X; p0.X = p0.Y; p0.Y = t;
+                t = p1.X; p1.X = p1.Y; p1.Y = t;
+                t = deltax; deltax = deltay; deltay = t;
+            };
 
             int error = 0;
             int deltaerr = deltay;
-            int y = p2.Y;
-            for (int x = p2.X; x < p1.X; x++)
+            int y = p0.Y;
+            int dx = Math.Sign(p1.X - p0.X);
+            int dy = Math.Sign(p1.Y - p0.Y);
+            for (int x = p0.X; x != p1.X; x += dx)
             {
-                if (IsBlack(x, y))
-                    return new Point(x, y);
+                if (b45)
+                {
+                    if (IsBlack(y, x))
+                        return new Point(y, x);
+                }
+                else
+                {
+                    if (IsBlack(x, y))
+                        return new Point(x, y);
+                }
                 error += deltaerr;
                 if (2 * error >= deltax)
-                    y--;
-                error = error - deltax;
+                {
+                    y += dy;
+                    error -= deltax;
+                }
             }
             return null;
         }
 
-        // Движемся слева направо и сверху вниз. Угол наклона <= 45 град.
-        // Если нет черной точки, возвращаем null
-        //
-        Point? UpWay(int xo, int yo)
-        {
-            Point p2 = tots[xo, yo];
-            Point p1 = tots[xo, yo - 1];
-            int deltax = Math.Abs(p1.X - p2.X);
-            int deltay = Math.Abs(p1.Y - p2.Y);
-
-            int error = 0;
-            int deltaerr = deltax;
-            int x = p2.X;
-            for (int y = p2.Y; y < p1.Y; y++)
-            {
-                if (IsBlack(x, y))
-                    return new Point(x, y);
-                error += deltaerr;
-                if (2 * error >= deltay)
-                    x--;
-                error = error - deltay;
-            }
-            return null;
-        }
-
+        //  DEPRECATED 
         private Point? PathToLeft(int xo, int yo)
         {
             Point p1 = tots[xo, yo];
@@ -302,15 +297,16 @@ namespace Contur
             int y1 = Math.Min(p1.Y, p2.Y);
             int y2 = Math.Max(p1.Y, p2.Y);
 
-            for (int x = p1.X; x >= p2.X; x--)
+            for (int x = p1.X; x > p2.X; x--)
                 if (IsBlack(x, y1))
                     return new Point(x, y1);
-            for (int y = y1; y <= y2; y++)
+            for (int y = y1; y < y2; y++)
                 if (IsBlack(p2.X, y))
                     return new Point(p2.X, y1);
             return null;
         }
 
+        //  DEPRECATED 
         private Point? PathToUp(int xo, int yo)
         {
             Point p1 = tots[xo, yo];
@@ -321,7 +317,7 @@ namespace Contur
             for (int y = p1.Y; y > p2.Y; y--)
                 if (IsBlack(x1, y))
                     return new Point(x1, y);
-            for (int x = x1; x <= x2; x++)
+            for (int x = x1; x < x2; x++)
                 if (IsBlack(x, p2.Y))
                     return new Point(x, p2.Y);
             return null;
