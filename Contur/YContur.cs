@@ -116,9 +116,9 @@ namespace Contur
             {
                 for (int xo = 1; xo < dots.GetLength(0); xo++)
                 {
-                    int y = PathToUp(xo, yo);
-                    int x = PathToLeft(xo, yo);
-                    if (y == -1 && x == -1)
+                    Point? pUp = PathToUp(xo, yo);
+                    Point? pLeft = PathToLeft(xo, yo);
+                    if (pUp == null && pLeft == null)
                     {
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
@@ -136,41 +136,38 @@ namespace Contur
                             up.AddRange(left);
                         }                            
                     }
-                    else if (y == -1 && x != -1)
+                    else if (pUp == null && pLeft != null)
                     {
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
                         dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку слева
-                        points.Add(new Point(x, yo * _step));
+                        points.Add((Point)pLeft);
                     }
-                    else if (x == -1 && y != -1)
+                    else if (pUp != null && pLeft == null)
                     {
                         // красим в левый цвет
                         dots[xo, yo] = dots[xo - 1, yo];
                         dots[xo, yo].Add(new Point(xo, yo));
                         // создаем точку сверху
-                        var p = new Point(xo * _step, y);
-                        points.Add(p);
+                        points.Add((Point)pUp);
                     }
                     else  // x != -1 && y != -1
                     {
-                        // красим в новый цвет
+                        // новая компонента связности
                         dots[xo, yo] = new ConComp();
                         dots[xo, yo].Add(new Point(xo, yo));
-
                         // создаем точку слева
-                        var p = new Point(x, yo * _step);
-                        points.Add(p);
+                        points.Add((Point)pLeft);
                         // создаем точку сверху
-                        p = new Point(xo * _step, y);
-                        points.Add(p);
-
+                        points.Add((Point)pUp);
                     }
                 }
             }
         }
 
+        // Инициализация реперных точек (контрольный вариант - без смещения)
+        //
         private void InitTots0(int wo, int ho)
         {
             tots = new Point[wo, ho];
@@ -185,6 +182,8 @@ namespace Contur
             }
         }
 
+        // Инициализация реперных точек (вариант с двумя направлениями: вверх и влево)
+        //
         private void InitTots(int wo, int ho)
         {
             tots = new Point[wo, ho];
@@ -212,6 +211,8 @@ namespace Contur
             }
         }
 
+        // Инициализация реперных точек (вариант с диагональным растром)
+        //
         private void InitTots1(int wo, int ho)
         {
             tots = new Point[wo, ho];
@@ -294,7 +295,7 @@ namespace Contur
             return null;
         }
 
-        private int PathToLeft(int xo, int yo)
+        private Point? PathToLeft(int xo, int yo)
         {
             Point p1 = tots[xo, yo];
             Point p2 = tots[xo - 1, yo];
@@ -303,14 +304,14 @@ namespace Contur
 
             for (int x = p1.X; x >= p2.X; x--)
                 if (IsBlack(x, y1))
-                    return x;
+                    return new Point(x, y1);
             for (int y = y1; y <= y2; y++)
                 if (IsBlack(p2.X, y))
-                    return p2.X;
-            return -1;
+                    return new Point(p2.X, y1);
+            return null;
         }
 
-        private int PathToUp(int xo, int yo)
+        private Point? PathToUp(int xo, int yo)
         {
             Point p1 = tots[xo, yo];
             Point p2 = tots[xo, yo - 1];
@@ -319,11 +320,11 @@ namespace Contur
 
             for (int y = p1.Y; y > p2.Y; y--)
                 if (IsBlack(x1, y))
-                    return y;
+                    return new Point(x1, y);
             for (int x = x1; x <= x2; x++)
                 if (IsBlack(x, p2.Y))
-                    return p2.Y;
-            return -1;
+                    return new Point(x, p2.Y);
+            return null;
         }
 
         // Test if a point is on board
