@@ -58,6 +58,7 @@ namespace Contur
             //return new List<Point[]>();
 
             __DrawDots();
+            __DrawPoints();
             __ShowConComps();
 
             return MakeAllConturs();
@@ -66,6 +67,8 @@ namespace Contur
         List<Point[]> MakeAllConturs()
         {
             var conturs = new List<Point[]>();
+
+            // Распределение точек по контурам
 
             foreach (var p in points)
             {
@@ -87,6 +90,8 @@ namespace Contur
                     dots[ox + 1, oy].Points.Add(p);
                 }
             }
+
+            // Сборка контуров
 
             var comps = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
             foreach (var comp in comps)
@@ -428,7 +433,7 @@ namespace Contur
         private void __DrawPoints()
         {
             foreach (var p in points)
-                _g.FillRectangle(Brushes.Red, p.X - 1, p.Y - 1, 3, 3);
+                _g.FillRectangle(Brushes.Yellow, p.X, p.Y, 1, 1);
         }
 
         private void __ShowConComps()
