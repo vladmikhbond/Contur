@@ -248,12 +248,15 @@ namespace Contur
 
         }
 
-
+        // На отрезке, соединяющем точки p0 и p1, находим усредненный черный пиксель
+        // или null, если черных пикселей нет
+        //
         Point? BrezenhamPath(Point p0, Point p1)
         {
             int deltax = Math.Abs(p1.X - p0.X);
             int deltay = Math.Abs(p1.Y - p0.Y);
 
+            // change X and Y to make horizontal longer then vertical
             bool b45 = deltax < deltay;
             if (b45)
             {
@@ -267,17 +270,33 @@ namespace Contur
             int y = p0.Y;
             int dx = Math.Sign(p1.X - p0.X);
             int dy = Math.Sign(p1.Y - p0.Y);
+
+            // для усреднения черных точек 
+            int blackSumX = 0;
+            int blackSumY = 0;
+            int blackCount = 0;
+
             for (int x = p0.X; x != p1.X; x += dx)
             {
                 if (b45)
                 {
                     if (IsBlack(y, x))
-                        return new Point(y, x);
+                    {
+                        //return new Point(y, x);
+                        blackSumX += y;
+                        blackSumY += x;
+                        blackCount++;
+                    }
                 }
                 else
                 {
                     if (IsBlack(x, y))
-                        return new Point(x, y);
+                    {
+                        //return new Point(x, y);
+                        blackSumX += x;
+                        blackSumY += y;
+                        blackCount++;
+                    }
                 }
                 error += deltaerr;
                 if (2 * error >= deltax)
@@ -286,6 +305,8 @@ namespace Contur
                     error -= deltax;
                 }
             }
+            if (blackCount > 0)
+                return new Point(blackSumX / blackCount, blackSumY / blackCount);
             return null;
         }
 
