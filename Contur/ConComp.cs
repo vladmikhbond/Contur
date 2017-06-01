@@ -13,15 +13,24 @@ namespace Contur
     /// </summary>
     public class ConComp : List<Point>
     {
-        public List<System.Drawing.Point> Points = new List<System.Drawing.Point>();
+        // Хранилище разделительных точек контура
+        public List<Point> Points = new List<Point>();
 
-        public ConComp() { }
-
-        public ConComp(int len0, int len1)
+        // Для создания новой компоненты из единственной точки.
+        //
+        public ConComp(Point p)
         {
-            for (int xo = 0; xo < len0; xo++)
+            Add(p);
+        }
+
+        // Для создания начальной компоненты, в которую включаются 
+        // все реперные точки на верхней и левой границах изображения.
+        //
+        public ConComp(int width, int height)
+        {
+            for (int xo = 0; xo < width; xo++)
                 Add(new Point(xo, 0));
-            for (int yo = 0; yo < len1; yo++)
+            for (int yo = 0; yo < height; yo++)
                 Add(new Point(0, yo));
         }
     }

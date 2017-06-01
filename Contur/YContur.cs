@@ -36,7 +36,6 @@ namespace Contur
         ConComp[,] dots;     // scout net : 0 - empty, 1,2,3... - contur chromes
         Point[,] tots;
         int WO, HO;          // width and height jf the dots and tots
-        List<Point> points; // общая коллекция цветных точек 
 
         // for inspection only
         Graphics _g;
@@ -54,47 +53,55 @@ namespace Contur
 
         public List<Point[]> Process()
         {
+            InitDots();
+            InitTots();
+
             FludFill();
             //return new List<Point[]>();
 
             __DrawDots();
+            MakePoints();
+
             __DrawPoints();
             __ShowConComps();
 
             return MakeAllConturs();
         }
 
-        List<Point[]> MakeAllConturs()
+        // Создает разделительные точки, одновременно распределяя их по контурам.
+        //
+        private void MakePoints()
         {
-            var conturs = new List<Point[]>();
-
-            // Распределение точек по контурам
-
-            foreach (var p in points)
+            for (int yo = 1; yo < dots.GetLength(1); yo++)
             {
-                int ox = p.X / _step;
-                int oy = p.Y / _step;
-
-                // точка в первый смежный контур
-                dots[ox, oy].Points.Add(p);
-
-                // точка во второй смежный контур
-                if (ox * _step == p.X && oy + 1 < dots.GetLength(1))
+                for (int xo = 1; xo < dots.GetLength(0); xo++)
                 {
-                    // точка лежит на вертикали
-                    dots[ox, oy + 1].Points.Add(p);
-                }
-                if (oy * _step == p.Y && ox + 1 < dots.GetLength(0))
-                {
-                    // точка лежит на горизонтали
-                    dots[ox + 1, oy].Points.Add(p);
+                    Point? pLeft = BrezenhamPath(tots[xo, yo], tots[xo - 1, yo]);
+                    if (pLeft != null)
+                    {
+                        // создаем точки между реперами dots[xo, yo] и dots[xo - 1, yo]
+                        dots[xo, yo].Points.Add((Point)pLeft);
+                        dots[xo - 1, yo].Points.Add((Point)pLeft);
+                    }
+                    Point? pUp = BrezenhamPath(tots[xo, yo], tots[xo, yo - 1]);
+                    if (pUp != null)
+                    {
+                        // создаем точки между реперами dots[xo, yo] и dots[xo, yo - 1]
+                        dots[xo, yo].Points.Add((Point)pUp);
+                        dots[xo, yo - 1].Points.Add((Point)pUp);
+                    }
                 }
             }
+        }
 
-            // Сборка контуров
+        // Сборка контуров
+        //
+        List<Point[]> MakeAllConturs()
+        {
+            var conComps = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
 
-            var comps = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
-            foreach (var comp in comps)
+            var conturs = new List<Point[]>();
+            foreach (var comp in conComps)
             {
                 var ps = MakeConturFromPointSet(comp.Points);
                 if (ps != null)
@@ -103,30 +110,16 @@ namespace Contur
             return conturs;
         }
 
-
+        // Определение компонент связности путем заливки
+        //
         void FludFill()
         {
-            points = new List<Point>();
-
-            // init dots array
-            dots = new ConComp[WO, HO];
-            ConComp zero = new ConComp(WO, HO);
-            for (int xo = 0; xo < WO; xo++)
-                dots[xo, 0] = zero;
-            for (int yo = 0; yo < HO; yo++)
-                dots[0, yo] = zero;
-
-            InitTots(WO, HO);
-
-
             for (int yo = 1; yo < dots.GetLength(1); yo++)
             {
                 for (int xo = 1; xo < dots.GetLength(0); xo++)
                 {
                     Point? pLeft = BrezenhamPath(tots[xo, yo], tots[xo - 1, yo]);
                     Point? pUp = BrezenhamPath(tots[xo, yo], tots[xo, yo - 1]);
-                    //Point? pUp = PathToUp(xo, yo);
-                    //Point? pLeft = PathToLeft(xo, yo);
                     if (pUp == null && pLeft == null)
                     {
                         // красим в верхний цвет
@@ -150,56 +143,43 @@ namespace Contur
                         // красим в верхний цвет
                         dots[xo, yo] = dots[xo, yo - 1];
                         dots[xo, yo].Add(new Point(xo, yo));
-                        // создаем точку слева
-                        points.Add((Point)pLeft);
                     }
                     else if (pUp != null && pLeft == null)
                     {
                         // красим в левый цвет
                         dots[xo, yo] = dots[xo - 1, yo];
                         dots[xo, yo].Add(new Point(xo, yo));
-                        // создаем точку сверху
-                        points.Add((Point)pUp);
                     }
                     else  // x != -1 && y != -1
                     {
                         // новая компонента связности
-                        dots[xo, yo] = new ConComp();
-                        dots[xo, yo].Add(new Point(xo, yo));
-                        // создаем точку слева
-                        points.Add((Point)pLeft);
-                        // создаем точку сверху
-                        points.Add((Point)pUp);
+                        dots[xo, yo] = new ConComp(new Point(xo, yo));
                     }
                 }
             }
         }
 
-        // Инициализация реперных точек (контрольный вариант - без смещения)
+        // init dots array
         //
-        private void InitTots0(int wo, int ho)
+        private void InitDots()
         {
-            tots = new Point[wo, ho];
-            for (int xo = 0; xo < wo; xo++)
-            {
-                int x = xo * _step;
-                for (int yo = 0; yo < ho; yo++)
-                {
-                    int y = yo * _step;
-                    tots[xo, yo] = new Point(x, y);
-                }
-            }
+            dots = new ConComp[WO, HO];
+            ConComp zero = new ConComp(WO, HO);
+            for (int xo = 0; xo < WO; xo++)
+                dots[xo, 0] = zero;
+            for (int yo = 0; yo < HO; yo++)
+                dots[0, yo] = zero;
         }
 
-        // Инициализация реперных точек (вариант с двумя направлениями: вверх и влево)
+        // Коррекция реперных точек (вариант с двумя направлениями: вверх и влево)
         //
-        private void InitTots(int wo, int ho)
+        private void InitTots()
         {
-            tots = new Point[wo, ho];
-            for (int xo = 0; xo < wo; xo++)
+            tots = new Point[WO, HO];
+            for (int xo = 0; xo < WO; xo++)
             {
                 int x = xo * _step;
-                for (int yo = 0; yo < ho; yo++)
+                for (int yo = 0; yo < HO; yo++)
                 {
                     int y = yo * _step;
                     tots[xo, yo] = new Point(x, y);
@@ -218,39 +198,6 @@ namespace Contur
                     }
                 }
             }
-        }
-
-        // DEPRECATED Инициализация реперных точек (вариант с диагональным растром)
-        //
-        private void InitTots1(int wo, int ho)
-        {
-            tots = new Point[wo, ho];
-            int[,] dxy = { { 0, 0 },
-                { 0, 1 }, { 1, 0 },
-                { 0, 2 }, { 1, 1 }, { 2, 0 },
-                { 0, 3}, { 1, 2 }, { 2, 1 }, { 3, 0 },
-                { 0, 4}, { 1, 3 }, { 2, 2 }, { 3, 1 }, { 4, 0 },
-                { 0, 5}, { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 0 },
-                { 0, 6}, { 1, 5 }, { 2, 4 }, { 3, 3 }, { 4, 2 }, { 5, 1 }, { 6, 0 },
-            };
-            for (int xo = 0; xo < wo; xo++)
-            {
-                for (int yo = 0; yo < ho; yo++)
-                {
-                    int x = xo * _step;
-                    int y = yo * _step;
-                    int dx = 0, dy = 0;
-                    for (int a = 0; a < dxy.Length / 2; a++)
-                    {
-                        dx = dxy[a, 0];
-                        dy = dxy[a, 1];
-                        if (!IsBlack(x - dx, y - dy))
-                            break;
-                    }
-                    tots[xo, yo] = new Point(x - dx, y - dy);
-                }
-            }
-
         }
 
         // На отрезке, соединяющем точки p0 и p1, находим усредненный черный пиксель
@@ -315,40 +262,6 @@ namespace Contur
             return null;
         }
 
-        //  DEPRECATED 
-        private Point? PathToLeft(int xo, int yo)
-        {
-            Point p1 = tots[xo, yo];
-            Point p2 = tots[xo - 1, yo];
-            int y1 = Math.Min(p1.Y, p2.Y);
-            int y2 = Math.Max(p1.Y, p2.Y);
-
-            for (int x = p1.X; x > p2.X; x--)
-                if (IsBlack(x, y1))
-                    return new Point(x, y1);
-            for (int y = y1; y < y2; y++)
-                if (IsBlack(p2.X, y))
-                    return new Point(p2.X, y1);
-            return null;
-        }
-
-        //  DEPRECATED 
-        private Point? PathToUp(int xo, int yo)
-        {
-            Point p1 = tots[xo, yo];
-            Point p2 = tots[xo, yo - 1];
-            int x1 = Math.Min(p1.X, p2.X);
-            int x2 = Math.Max(p1.X, p2.X);
-
-            for (int y = p1.Y; y > p2.Y; y--)
-                if (IsBlack(x1, y))
-                    return new Point(x1, y);
-            for (int x = x1; x < x2; x++)
-                if (IsBlack(x, p2.Y))
-                    return new Point(x, p2.Y);
-            return null;
-        }
-
         // Test if a point is on board
         //
         private bool IsBlack(int x, int y)
@@ -402,7 +315,7 @@ namespace Contur
             return dx * dx + dy * dy;
         }
 
-        #region Inspection
+        #region For Inspection
 
         private void __DrawDots()
         {
@@ -432,6 +345,7 @@ namespace Contur
 
         private void __DrawPoints()
         {
+            var points = dots.OfType<ConComp>().Distinct().SelectMany(c => c.Points).Distinct();
             foreach (var p in points)
                 _g.FillRectangle(Brushes.Yellow, p.X, p.Y, 1, 1);
         }
