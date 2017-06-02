@@ -13,13 +13,13 @@ using System.Windows.Forms;
 
 namespace Conturator2
 {
-    public partial class XForm : Form
+    public partial class MainForm : Form
     {
         ConturList conturList;
         Image currentImage;
 
 
-        public XForm()
+        public MainForm()
         {
             InitializeComponent();
             currentImage = pBox.Image;
@@ -82,13 +82,11 @@ namespace Conturator2
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)
         {
-            var cs = conturList.ContursAroundPoint(e.Location);
+            var conturs = conturList.ContursAroundPoint(e.Location);
+            var innerContur = conturs.OrderBy(c => c.Length).First();
+
             Graphics g = pBox.CreateGraphics();
-            foreach (var c in cs)
-            {
-                g.DrawPolygon(new Pen(Color.Yellow, 2), c);
-            }
-            infoLabel.Text = conturList.ConturIdxAroundPoint(e.Location).ToString();
+            g.DrawPolygon(new Pen(Color.Yellow, 2), innerContur);
         }
 
         private void pBox_MouseMove(object sender, MouseEventArgs e)
@@ -113,9 +111,9 @@ namespace Conturator2
                 return;
 
 
-            for (int i = 0; i < conturList.List.Count; i++)
+            for (int i = 0; i < conturList.Conturs.Count; i++)
             {
-                var contur = conturList.List[i];
+                var contur = conturList.Conturs[i];
                 if (contur.Count() < 2)
                     continue;
                 e.Graphics.DrawPolygon(Pens.Red, contur);
@@ -128,7 +126,7 @@ namespace Conturator2
             Pen[] pens = { Pens.Black, Pens.Red, Pens.Green, Pens.Blue, Pens.Magenta, Pens.Brown };
 
             int penIdx = 0;
-            foreach (var list in conturList.List)
+            foreach (var list in conturList.Conturs)
             {
                 if (list.Count() < 2)
                     continue;

@@ -45,7 +45,7 @@ namespace Contur
         /// 
         public void OrderPoints(int step)
         {
-            int MAX_DIST = step * step * 4;
+            int MAX_DIST = (step * step * 2) * 3 * 3; // линейный размер - 3 диагонали клетки
             var input = Points;
             var output = new List<Point>();
             Fails = new List<Point>();

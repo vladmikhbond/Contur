@@ -311,7 +311,7 @@ namespace Contur
         {
             var points = dots.OfType<ConComp>().Distinct().SelectMany(c => c.Fails).Distinct();
             foreach (var p in points)
-                _g.DrawArc(Pens.Blue, p.X-2, p.Y-2, 5, 5, 0, 360);
+                _g.DrawArc(Pens.Blue, p.X-10, p.Y-10, 20, 20, 0, 360);
         }
 
         private void __ShowConComps()

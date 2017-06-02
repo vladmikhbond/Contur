@@ -51,10 +51,7 @@
   <ItemGroup>
     <Compile Include="ConturList.cs" />
     <Compile Include="ConComp.cs" />
-    <Compile Include="CPoint.cs" />
-    <Compile Include="SContur.cs" />
     <Compile Include="YContur.cs" />
-    <Compile Include="XContur.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
