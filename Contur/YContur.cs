@@ -57,15 +57,16 @@ namespace Contur
             InitTots();
 
             FludFill();
-            //return new List<Point[]>();
 
             __DrawDots();
             MakePoints();
 
             __DrawPoints();
-            __ShowConComps();
 
-            return MakeAllConturs();
+            var res = MakeAllConturs();
+            __DrawFails();
+            __ShowConComps();
+            return res;
         }
 
         // Создает разделительные точки, одновременно распределяя их по контурам.
@@ -103,9 +104,8 @@ namespace Contur
             var conturs = new List<Point[]>();
             foreach (var comp in conComps)
             {
-                var ps = MakeConturFromPointSet(comp.Points);
-                if (ps != null)
-                    conturs.Add(ps.ToArray());
+                comp.OrderPoints(_step);              
+                conturs.Add(comp.Points.ToArray());
             }
             return conturs;
         }
@@ -272,50 +272,7 @@ namespace Contur
             return c.R < 255 && c.G < 255 && c.B < 255;
         }
 
-        /// Собирает контур из неупорядоченного множества точек
-        /// 
-        /// берем первую точку из входного массива и переносим в выходной
-        /// находим во входном массиве ближайшую  к последней перенесенной и переносим ее в выходной
-        /// продолжаем переносить, пока точки во входном массве не закончатся
-        /// 
-        List<Point> MakeConturFromPointSet(IEnumerable<Point> points)
-        {
-            int MAX_DIST = _step * _step * 4;
-            var input = new List<Point>(points);
-            var output = new List<Point>();
-
-            var last = input[0];
-            output.Add(last);
-            input.RemoveAt(0);
-
-            while (input.Count > 0)
-            {
-                var dists = input.Select(p => Dist(p, last));
-                double minDist = dists.Min();
-                int minIdx = dists.ToList().IndexOf(minDist);
-                // слишком далекие точки пропускаем
-                if (minDist <= MAX_DIST)
-                {
-                    last = input[minIdx];
-                    output.Add(last);
-                }
-
-                input.RemoveAt(minIdx);
-            }
-            // exclude unclose conturs   //  it is a PATCH
-            //if (Dist(output[0], output.Last()) >= MAX_DIST)
-            //    return null;
-            return output;
-
-        }
-
-        private static double Dist(Point p1, Point p2)
-        {
-            int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
-            return dx * dx + dy * dy;
-        }
-
-        #region For Inspection
+         #region For Inspection
 
         private void __DrawDots()
         {
@@ -350,10 +307,17 @@ namespace Contur
                 _g.FillRectangle(Brushes.Yellow, p.X, p.Y, 1, 1);
         }
 
+        private void __DrawFails()
+        {
+            var points = dots.OfType<ConComp>().Distinct().SelectMany(c => c.Fails).Distinct();
+            foreach (var p in points)
+                _g.DrawArc(Pens.Blue, p.X-2, p.Y-2, 5, 5, 0, 360);
+        }
+
         private void __ShowConComps()
         {
             var comps = dots.OfType<ConComp>().Distinct().ToArray();
-            var counts = comps.Select(c => c.Count().ToString());
+            var counts = comps.Select(c => $"{c.Count()} / {c.Fails.Count}");
             _info.Text = $"All={counts.Count()}\r\n" + string.Join("\r\n", counts);      
         }
 
