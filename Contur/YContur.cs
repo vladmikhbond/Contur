@@ -41,6 +41,9 @@ namespace Contur
         Graphics _g;
         TextBox _info;
 
+        // output data (valide after call MakeAllConturs() )
+        public ConComp[] Conturs { get; private set; }
+
         public YContur(Bitmap img, int step, Graphics g, TextBox info)
         {
             _img = img;
@@ -51,7 +54,7 @@ namespace Contur
             HO = _img.Height / _step + 1;
         }
 
-        public List<Point[]> Process()
+        public void Process()
         {
             InitDots();
             InitTots();
@@ -63,10 +66,9 @@ namespace Contur
 
             __DrawPoints();
 
-            var res = MakeAllConturs();
+            MakeAllConturs();
             __DrawFails();
             __ShowConComps();
-            return res;
         }
 
         // Создает разделительные точки, одновременно распределяя их по контурам.
@@ -99,12 +101,12 @@ namespace Contur
         //
         List<Point[]> MakeAllConturs()
         {
-            var conComps = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
+            Conturs = dots.OfType<ConComp>().Distinct().Where(c => c.Count > 1).ToArray();
 
             var conturs = new List<Point[]>();
-            foreach (var comp in conComps)
+            foreach (var comp in Conturs)
             {
-                comp.OrderPoints(_step);              
+                comp.PointsInOrder(_step);              
                 conturs.Add(comp.Points.ToArray());
             }
             return conturs;
@@ -272,7 +274,34 @@ namespace Contur
             return c.R < 255 && c.G < 255 && c.B < 255;
         }
 
-         #region For Inspection
+        public IEnumerable<Point[]> ContursAroundPoint(Point p)
+        {
+            return Conturs
+                .Where(c => IsInside(c.Points, p))
+                .OrderBy(c => c.Count())
+                .Select(c => c.Points.ToArray());
+        }
+
+        static bool IsInside(IList<Point> ps, Point p)
+        {
+            bool result = false;
+            int j = ps.Count() - 1;
+            for (int i = 0; i < ps.Count(); i++)
+            {
+                if (ps[i].Y < p.Y && ps[j].Y >= p.Y || ps[j].Y < p.Y && ps[i].Y >= p.Y)
+                {
+                    if (ps[i].X + (p.Y - ps[i].Y) / (ps[j].Y - ps[i].Y) * (ps[j].X - ps[i].X) < p.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+
+        #region For Inspection
 
         private void __DrawDots()
         {

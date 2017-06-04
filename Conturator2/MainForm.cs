@@ -15,9 +15,8 @@ namespace Conturator2
 {
     public partial class MainForm : Form
     {
-        ConturList conturList;
         Image currentImage;
-
+        YContur ycontur;
 
         public MainForm()
         {
@@ -38,20 +37,19 @@ namespace Conturator2
         }
 
 
-        private void MakeWhiteEmptyImage()
-        {
-            var bmp = new Bitmap(pBox.Width, pBox.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
-            }
-            pBox.Image = bmp;
-        }
+        //private void MakeWhiteEmptyImage()
+        //{
+        //    var bmp = new Bitmap(pBox.Width, pBox.Height);
+        //    using (Graphics g = Graphics.FromImage(bmp))
+        //    {
+        //        g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+        //    }
+        //    pBox.Image = bmp;
+        //}
 
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            conturList = null;
             pBox.Refresh();
         }
 
@@ -60,33 +58,35 @@ namespace Conturator2
             if (pBox.Image == null)
                 pBox.Image = currentImage;
             int step = Convert.ToInt32(stepBox.Text);
-            YContur xc = new YContur((Bitmap)pBox.Image, step, pBox.CreateGraphics(), textBox1);
+            ycontur = new YContur((Bitmap)pBox.Image, step, pBox.CreateGraphics(), textBox1);
             pBox.Refresh();
             // t
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
             // Main part of work
-            List<System.Drawing.Point[]> cl = xc.Process();
-            conturList = new ConturList(cl);
-            
+            ycontur.Process();
+                        
             // t
             stopWatch.Stop();
             string msec = stopWatch.ElapsedMilliseconds.ToString();
             
-
-            infoLabel.Text = $"Conturs = {cl.Count()}, t = {msec} msec";
-            messBox.Text = string.Join("\r\n", cl.Select(c => c.Count().ToString()));      
+            // ordered list of conturs
+            infoLabel.Text = $"Conturs = {ycontur.Conturs.Length }, t = {msec} msec";
+            var xx = ycontur.Conturs.Select((c, i) => $"{i} - {c.Points.Count} / {c.Fails.Count}");
+            messBox.Text = string.Join("\r\n", xx);      
         }
 
 
         private void pBox_MouseDown(object sender, MouseEventArgs e)
         {
-            var conturs = conturList.ContursAroundPoint(e.Location);
-            var innerContur = conturs.OrderBy(c => c.Length).First();
-
-            Graphics g = pBox.CreateGraphics();
-            g.DrawPolygon(new Pen(Color.Yellow, 2), innerContur);
+            var conturs = ycontur.ContursAroundPoint(e.Location);
+            var innerContur = conturs.OrderBy(c => c.Length).FirstOrDefault();
+            if (innerContur != null)
+            {
+                Graphics g = pBox.CreateGraphics();
+                g.DrawPolygon(new Pen(Color.Yellow, 2), innerContur);
+            }
         }
 
         private void pBox_MouseMove(object sender, MouseEventArgs e)
@@ -94,43 +94,30 @@ namespace Conturator2
             Text = $"{e.X}-{e.Y}";
         }
 
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            conturList.SaveToFile("xconturs.txt");
-        }
-
-        private void loadFileButton_Click(object sender, EventArgs e)
-        {
-            conturList = new ConturList("xconturs.txt");
-            pBox.Refresh();
-        }
-
         private void pBox_Paint(object sender, PaintEventArgs e)
         {
-            if (conturList == null)
+            if (ycontur?.Conturs == null)
                 return;
 
 
-            for (int i = 0; i < conturList.Conturs.Count; i++)
+            for (int i = 0; i < ycontur.Conturs.Length; i++)
             {
-                var contur = conturList.Conturs[i];
-                if (contur.Count() < 2)
-                    continue;
-                e.Graphics.DrawPolygon(Pens.Red, contur);
-                float x = (float)contur.Average(p => p.X);
-                float y = (float)contur.Average(p => p.Y);
+                var points = ycontur.Conturs[i].Points;
+                //if (contur.Count() < 2)
+                //    continue;
+                e.Graphics.DrawPolygon(Pens.Red, points.ToArray());
+                float x = (float)points.Average(p => p.X);
+                float y = (float)points.Average(p => p.Y);
                 e.Graphics.DrawString(i.ToString(), Font, Brushes.Black, x, y);
             }
 
             
-            Pen[] pens = { Pens.Black, Pens.Red, Pens.Green, Pens.Blue, Pens.Magenta, Pens.Brown };
+            Pen[] pens = { Pens.Red, Pens.Green, Pens.Blue, Pens.Magenta, Pens.Brown };
 
             int penIdx = 0;
-            foreach (var list in conturList.Conturs)
+            foreach (var contur in ycontur.Conturs)
             {
-                if (list.Count() < 2)
-                    continue;
-                e.Graphics.DrawPolygon(pens[penIdx], list);
+                e.Graphics.DrawPolygon(pens[penIdx], contur.Points.ToArray());
                 penIdx = (penIdx + 1) % pens.Length;
             }
 
