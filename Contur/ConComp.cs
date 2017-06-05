@@ -105,8 +105,8 @@ namespace Contur
             Points.Add(start);
             Points.AddRange(output1);
 
-            JoinFails();
-            InverseLoops();
+            //JoinFails();
+            //InverseLoops();
         }
 
 

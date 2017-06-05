@@ -29,10 +29,13 @@ namespace Conturator2
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                Size size1 = currentImage.Size;
                 currentImage = Image.FromFile(openFileDialog1.FileName);
+                Size size2 = currentImage.Size;
+
                 pBox.Image = currentImage;
-                Width = pBox.Width + 220;
-                Height = pBox.Height + 100;
+                Width += size2.Width - size1.Width;
+                Height += size2.Height - size1.Height;
             }
         }
 

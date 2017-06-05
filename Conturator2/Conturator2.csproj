@@ -96,9 +96,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Images\smile.png" />
     <Content Include="Images\UkraineContur.png" />
-    <Content Include="Images\UkraineConturBlack.png" />
     <Content Include="Images\UkraineConturNoise.png" />
     <Content Include="Images\work.png" />
     <Content Include="Images\work1.png" />
