@@ -87,8 +87,9 @@ namespace Contur
         {
             // Found start point
             var startDot = comp.FirstOrDefault(p => p.X > 0 && p.Y > 0 && dots[p.X - 1, p.Y] != comp);
+            int startDir = 0;
             int xo = startDot.X, yo = startDot.Y;
-            int curDir = 0;
+            int curDir = startDir;
             do
             {
                 comp.Points.Add(new Point(xo * _step, yo * _step));  // temp
@@ -99,6 +100,7 @@ namespace Contur
                     xo = xo + 1;
                     yo = yo;
                     curDir = (curDir + 1) % 4;
+                    comp.Points.Add(new Point(xo * _step, (yo - 1) * _step));  // temp
                 }
                 // try go ahead
                 else if (dots[xo, yo - 1] == comp && dots[xo - 1, yo] != comp)
@@ -111,10 +113,11 @@ namespace Contur
                 {
                     xo = xo - 1;
                     yo = yo;
+                    curDir = (curDir - 1) % 4;
                 }
 
 
-            } while (xo != startDot.X || yo != startDot.Y);
+            } while (xo != startDot.X || yo != startDot.Y || curDir != startDir);
 
               
         }
