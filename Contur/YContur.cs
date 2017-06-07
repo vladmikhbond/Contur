@@ -60,67 +60,13 @@ namespace Contur
             InitTots();
             FludFill();
             __DrawDots();
-            WalkAroundConturs();
-
-            //MakePoints();
-
-            //__DrawPoints();
-
-            //MakeAllConturs();
-            //__DrawFails();
-            //__ShowConComps();
+            MakePoints();
+            __DrawPoints();
+            MakeAllConturs();
+            __DrawFails();
+            __ShowConComps();
         }
 
-        private void WalkAroundConturs()
-        {
-            Conturs = dots.OfType<ConComp>()
-                .Distinct()
-                .Where(c => c != dots[0,0])
-                .Where(c => c.Count > 1).ToArray();
-
-            foreach (var comp in Conturs)
-                WalkAroundContur(comp);                       
-        }
-
-
-        private void WalkAroundContur(ConComp comp)
-        {
-            // Found start point
-            var startDot = comp.FirstOrDefault(p => p.X > 0 && p.Y > 0 && dots[p.X - 1, p.Y] != comp);
-            int startDir = 0;
-            int xo = startDot.X, yo = startDot.Y;
-            int curDir = startDir;
-            do
-            {
-                comp.Points.Add(new Point(xo * _step, yo * _step));  // temp
-
-                // try turn right
-                if (dots[xo + 1, yo] == comp && dots[xo, yo - 1] != comp)
-                {
-                    xo = xo + 1;
-                    yo = yo;
-                    curDir = (curDir + 1) % 4;
-                    comp.Points.Add(new Point(xo * _step, (yo - 1) * _step));  // temp
-                }
-                // try go ahead
-                else if (dots[xo, yo - 1] == comp && dots[xo - 1, yo] != comp)
-                {
-                    xo = xo;
-                    yo = yo - 1;
-                }
-                // try turn left
-                else if (dots[xo - 1, yo] == comp && dots[xo - 1, yo + 1] != comp)
-                {
-                    xo = xo - 1;
-                    yo = yo;
-                    curDir = (curDir - 1) % 4;
-                }
-
-
-            } while (xo != startDot.X || yo != startDot.Y || curDir != startDir);
-
-              
-        }
 
         // Создает разделительные точки, одновременно распределяя их по контурам.
         //

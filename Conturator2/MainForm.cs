@@ -34,8 +34,8 @@ namespace Conturator2
                 Size size2 = currentImage.Size;
 
                 pBox.Image = currentImage;
-                Width += size2.Width - size1.Width;
-                Height += size2.Height - size1.Height;
+                //Width += size2.Width - size1.Width;
+                //Height += size2.Height - size1.Height;
             }
         }
 
@@ -129,9 +129,13 @@ namespace Conturator2
         private void noImageButton_Click(object sender, EventArgs e)
         {
             if (pBox.Image == null)
+            { 
                 pBox.Image = currentImage;
+            }
             else
+            {
                 pBox.Image = null;
+            }
         }
 
         private void stepBox_Click(object sender, EventArgs e)
